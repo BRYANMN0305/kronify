@@ -1,0 +1,173 @@
+/* ============================================================
+   ESTILOS PERSONALIZADOS PARA AUTENTICACIÓN (LOGIN / REGISTER)
+   ============================================================
+   Colores via variables CSS (variables.css).
+   Solo lo que Bootstrap no resuelve.
+   ============================================================ */
+
+/* ---- Fondo principal ---- */
+.auth-page {
+    background: var(--color-bg);
+}
+
+/* ---- Panel izquierdo: imagen + degradado ---- */
+.auth-panel-left {
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), rgba(0, 0, 0, 0.6)),
+    url('../images/auth/left-green-image.png') center / cover no-repeat;
+}
+
+/* ---- Título y subtítulo del formulario ---- */
+.auth-title {
+    color: var(--color-text);
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+.auth-subtitle {
+    color: var(--color-text);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* ---- Inputs: tema oscuro ---- */
+.auth-card .form-control {
+    background: var(--color-bg-dark);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card .form-control:focus {
+    background: var(--color-surface);
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+    color: var(--color-text);
+}
+
+.auth-card .form-control.is-invalid {
+    border-color: var(--color-error);
+    background: var(--color-surface-alt);
+}
+
+.auth-card .form-control::placeholder {
+    color: var(--color-text-placeholder);
+}
+
+/* ---- Labels ---- */
+.auth-card .form-label {
+    color: var(--color-text-label);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.4rem;
+}
+
+/* ---- Botón primario ---- */
+.auth-card .btn-primary {
+    background: var(--color-primary);
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.auth-card .btn-primary:hover {
+    background: var(--color-primary-hover);
+    color: var(--acero-1);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.auth-card .btn-primary:active {
+    transform: scale(0.98);
+}
+
+.auth-card .btn-primary:disabled {
+    opacity: 0.6;
+}
+
+/* ---- Enlace de registro/login ---- */
+.auth-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+/* ---- Checkbox personalizado ---- */
+.auth-card .form-check-input {
+    background: var(--color-surface-alt);
+    border: 1.5px solid var(--color-border);
+}
+
+.auth-card .form-check-input:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.auth-card .form-check-label {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+/* ---- Divisor "o" ---- */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--color-text-dim);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+    opacity: 0.6;
+}
+
+/* ---- Error del servidor ---- */
+.auth-error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    margin-top: 0.75rem;
+}
+
+/* ---- Footer texto ---- */
+.auth-footer-text {
+    color: var(--color-text);
+    font-size: 0.8rem;
+}
+
+/* ---- Feedback de error de validación ---- */
+.auth-card .invalid-feedback {
+    color: var(--color-error);
+    font-size: 0.75rem;
+    margin-top: 0.2rem;
+}
+
+
