@@ -13,7 +13,7 @@
 /* ---- Panel izquierdo: imagen + degradado ---- */
 .auth-panel-left {
     background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), rgba(0, 0, 0, 0.6)),
-    url('../images/auth/left-green-image.png') center / cover no-repeat;
+    url('../images/auth/left-image.png') center / cover no-repeat;
 }
 
 /* ---- Título y subtítulo del formulario ---- */
