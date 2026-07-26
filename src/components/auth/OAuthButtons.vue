@@ -45,13 +45,14 @@ defineEmits(['oauth'])
     font-weight: 500;
     color: var(--color-text-label);
     background: var(--color-surface);
+    box-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.08);
     transition: all 0.2s;
 }
 
 .btn-outline-light:hover {
     background: var(--color-surface-alt);
-    border-color: var(--color-border-hover);
+    border-color: var(--neon-dim);
     color: var(--color-text);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.2);
 }
 </style>

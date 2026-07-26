@@ -9,13 +9,19 @@
 <template>
   <div class="auth-page vh-100 d-flex">
 
-    <!-- Panel izquierdo: imagen decorativa (oculto en móvil) -->
+    <!-- Panel izquierdo: reloj animado + tagline (oculto en móvil) -->
     <div
         class="auth-panel-left d-none d-lg-flex flex-column position-relative rounded-3 overflow-hidden shadow-lg m-2"
         style="flex: 0 0 45%;"
     >
-      <div class="d-flex justify-content-end p-3">
+      <div class="auth-grid-overlay"></div>
+
+      <div class="d-flex justify-content-end p-3" style="position:relative; z-index:1;">
         <BackToWebsiteButtom />
+      </div>
+
+      <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="position:relative; z-index:1;">
+        <ChronoClock />
       </div>
 
       <AnimatedBars />
@@ -41,4 +47,5 @@
  */
 import AnimatedBars from '@/components/auth/AnimatedBars.vue'
 import BackToWebsiteButtom from "@/components/auth/BackToWebsiteButtom.vue";
+import ChronoClock from '@/components/auth/ChronoClock.vue'
 </script>

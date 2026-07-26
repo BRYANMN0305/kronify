@@ -13,6 +13,10 @@
     --acero-4: #3F6A78;
     --acero-5: #D5F0F7;
 
+    --neon: #3FE1FF;
+    --neon-dim: #1AA8C9;
+    --neon-soft: rgba(63, 225, 255, 0.35);
+
     /* ---- Fondo ---- */
     --color-bg: var(--acero-1);
     --color-bg-dark: var(--acero-1);

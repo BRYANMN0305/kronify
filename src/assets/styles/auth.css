@@ -10,10 +10,24 @@
     background: var(--color-bg);
 }
 
-/* ---- Panel izquierdo: imagen + degradado ---- */
+/* ---- Panel izquierdo: degradado oscuro con grid ---- */
 .auth-panel-left {
-    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), rgba(0, 0, 0, 0.6)),
-    url('../images/auth/left-image.png') center / cover no-repeat;
+    background:
+        radial-gradient(ellipse 120% 80% at 30% 20%, rgba(var(--color-primary-rgb), 0.25), transparent 60%),
+        linear-gradient(160deg, var(--acero-1) 0%, var(--acero-2) 55%, #071216 100%);
+}
+
+.auth-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(63,225,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(63,225,255,0.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* ---- Título y subtítulo del formulario ---- */
@@ -41,13 +55,19 @@
     font-size: 0.875rem;
     padding: 0.7rem 0.9rem;
     border-radius: 8px;
+    box-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.1);
     transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card .form-control:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.12);
 }
 
 .auth-card .form-control:focus {
     background: var(--color-surface);
-    border-color: var(--color-border-focus);
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+    border-color: var(--neon-dim);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18), 0 0 14px rgba(var(--color-primary-rgb), 0.25);
     color: var(--color-text);
 }
 
@@ -72,13 +92,14 @@
 /* ---- Botón primario ---- */
 .auth-card .btn-primary {
     background: var(--color-primary);
-    border: none;
+    border: 1px solid var(--neon-dim);
     border-radius: 10px;
     padding: 0.7rem;
     font-size: 0.875rem;
     font-weight: 700;
     color: var(--color-text);
     letter-spacing: 0.01em;
+    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
 }
 
@@ -86,7 +107,7 @@
     background: var(--color-primary-hover);
     color: var(--acero-1);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.35);
 }
 
 .auth-card .btn-primary:active {
