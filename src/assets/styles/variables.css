@@ -36,8 +36,8 @@
 
     /* ---- Texto ---- */
     --color-text: #FFFFFF;
-    --color-text-label: #FFFFFF;
-    --color-text-placeholder: #f6f8ff;
+    --color-text-label: #d5f0f7;
+    --color-text-placeholder: #747577;
     --color-text-muted: var(--acero-4);
     --color-text-dim: var(--acero-3);
 
