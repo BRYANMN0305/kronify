@@ -1,48 +1,36 @@
-/**
- * auth.js — Pinia store de autenticación
- * ======================================================
- * Almacena el token JWT y los datos del usuario.
- * Persiste en localStorage para mantener la sesión.
- * ======================================================
- */
-
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-/**
- * useAuthStore — Store de autenticación
- *
- * State:
- *   token {string|null}  — JWT del usuario
- *   user  {object|null}  — datos del usuario
- *
- * Getters:
- *   isAuthenticated {boolean} — true si hay token
- *
- * Actions:
- *   setAuth({ token, user }) — guarda credenciales
- *   logout()                 — elimina sesión
- */
-export const useAuthStore = defineStore('auth', () => {
+/** decodeJwt — Extrae el payload de un JWT sin verificar firma (solo lectura) */
+function decodeJwt(token) {
+  try {
+    const payload = token.split('.')[1]
+    const json = decodeURIComponent(
+        atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+            .split('')
+            .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+            .join('')
+    )
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
 
-  // ---- State: se inicializa desde localStorage ----
+export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null)
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
-  // ---- Getter: indica si el usuario está autenticado ----
   const isAuthenticated = computed(() => !!token.value)
 
-  // ---- Actions ----
-
-  /** setAuth — Persiste token y usuario en state + localStorage */
-  function setAuth({ token: t, user: u }) {
+  /** setAuth — Guarda el token y deriva el usuario de sus claims */
+  function setAuth({ token: t }) {
     token.value = t
-    user.value = u
+    user.value = decodeJwt(t)
     localStorage.setItem('token', t)
-    localStorage.setItem('user', JSON.stringify(u))
+    localStorage.setItem('user', JSON.stringify(user.value))
   }
 
-  /** logout — Elimina la sesión del state y localStorage */
   function logout() {
     token.value = null
     user.value = null

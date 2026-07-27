@@ -39,7 +39,7 @@ async function request(endpoint, options = {}) {
 export const authService = {
   /** login — Inicia sesión */
   login(credenciales) {
-    return request('/api/auth/login', {
+    return request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credenciales),
     })
@@ -47,7 +47,7 @@ export const authService = {
 
   /** register — Registra un nuevo usuario */
   register(payload) {
-    return request('/api/auth/register', {
+    return request('/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload),
     })

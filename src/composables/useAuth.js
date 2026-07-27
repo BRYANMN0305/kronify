@@ -32,8 +32,8 @@ export function useAuth() {
     loading.value = true
     error.value = null
     try {
-      const { token, user } = await authService.login(credenciales)
-      store.setAuth({ token, user })
+      const { accessToken } = await authService.login(credenciales)
+      store.setAuth({ token: accessToken })
       router.push('/dashboard')
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Login failed'
@@ -43,17 +43,13 @@ export function useAuth() {
     }
   }
 
-  /**
-   * register — Registra un nuevo usuario
-   * @param {{ name, lastName, phoneNumber, email, passwordHash, profileType }} payload
-   */
+  /** register — Registra al usuario y lo redirige a login (el backend no devuelve token) */
   async function register(payload) {
     loading.value = true
     error.value = null
     try {
-      const { token, user } = await authService.register(payload)
-      store.setAuth({ token, user })
-      router.push('/dashboard')
+      await authService.register(payload)
+      router.push({ name: 'Login' })
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Registration failed'
       throw error.value
@@ -61,7 +57,6 @@ export function useAuth() {
       loading.value = false
     }
   }
-
   /**
    * loginWithOAuth — Redirige al proveedor OAuth para autenticación
    * @param {'google'|'microsoft'} proveedor
