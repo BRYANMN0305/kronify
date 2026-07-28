@@ -12,6 +12,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useBusinessStore } from '@/stores/business'
 import { authService } from '@/api/auth'
 
 /**
@@ -43,13 +44,20 @@ export function useAuth() {
     }
   }
 
-  /** register — Registra al usuario y lo redirige a login (el backend no devuelve token) */
+  /** register — Registra al usuario, guarda el token y redirige */
   async function register(payload) {
     loading.value = true
     error.value = null
     try {
-      await authService.register(payload)
-      router.push({ name: 'Login' })
+      const { accessToken } = await authService.register(payload)
+      store.setAuth({ token: accessToken })
+
+      if (payload.profileType === 'BUSINESS') {
+        const businessStore = useBusinessStore()
+        await businessStore.fetchStatus()
+      }
+
+      router.push('/dashboard')
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Registration failed'
       throw error.value

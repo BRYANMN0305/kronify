@@ -38,5 +38,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user')
   }
 
-  return { token, user, isAuthenticated, setAuth, logout }
+  const profileType = computed(() => user.value?.profileType ?? null)
+  const isBusiness = computed(() => profileType.value === 'BUSINESS')
+
+  return { token, user, isAuthenticated, profileType, isBusiness, setAuth, logout }
 })
