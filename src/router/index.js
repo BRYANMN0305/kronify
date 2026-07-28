@@ -8,12 +8,16 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import authRoutes from './routes/auth.routes'
+import businessRoutes from './routes/business.routes'
 import { authGuard } from './guards'
 
 /** Lista completa de rutas */
 const routes = [
   // Rutas de autenticación: /login, /register
   ...authRoutes,
+
+  // Rutas de negocio: /onboarding-negocio
+  ...businessRoutes,
 
   // Redirección raíz → login
   {
