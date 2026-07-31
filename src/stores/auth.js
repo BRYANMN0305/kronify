@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 /** decodeJwt — Extrae el payload de un JWT sin verificar firma (solo lectura) */
-function decodeJwt(token) {
+const decodeJwt = (token) => {
   try {
     const payload = token.split('.')[1]
     const json = decodeURIComponent(
@@ -24,14 +24,14 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
 
   /** setAuth — Guarda el token y deriva el usuario de sus claims */
-  function setAuth({ token: t }) {
+  const setAuth = ({ token: t }) => {
     token.value = t
     user.value = decodeJwt(t)
     localStorage.setItem('token', t)
     localStorage.setItem('user', JSON.stringify(user.value))
   }
 
-  function logout() {
+  const logout = () => {
     token.value = null
     user.value = null
     localStorage.removeItem('token')

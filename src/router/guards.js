@@ -18,7 +18,7 @@ import { useBusinessStore } from '@/stores/business'
  * @param {import('vue-router').RouteLocationNormalized} to — ruta destino
  * @returns {boolean|object} true = permite, { name } = redirige
  */
-export async function authGuard(to) {
+export const authGuard = async (to) => {
   const token = localStorage.getItem('token')
 
   // Si la ruta es para invitados pero ya hay sesión → Dashboard
