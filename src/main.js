@@ -26,4 +26,12 @@ const app = createApp(App)
 app.use(createPinia())   // estado global con Pinia
 app.use(router)          // enrutador Vue Router
 
+// Si la sesión cambia desde otra pestaña (token/user en localStorage),
+// recarga la app para no mostrar datos de una cuenta anterior
+window.addEventListener('storage', (event) => {
+  if (event.key === 'token' || event.key === 'user') {
+    window.location.reload()
+  }
+})
+
 app.mount('#app')
