@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useBusinessStore } from '@/stores/business'
+import { useSettingsStore } from '@/stores/settings'
 
 /** decodeJwt — Extrae el payload de un JWT sin verificar firma (solo lectura) */
 const decodeJwt = (token) => {
@@ -25,6 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** setAuth — Guarda el token y deriva el usuario de sus claims */
   const setAuth = ({ token: t }) => {
+    // Limpia los datos de una sesión anterior antes de entrar con la nueva cuenta
+    useBusinessStore().reset()
+    useSettingsStore().reset()
     token.value = t
     user.value = decodeJwt(t)
     localStorage.setItem('token', t)
@@ -32,6 +37,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const logout = () => {
+    useBusinessStore().reset()
+    useSettingsStore().reset()
     token.value = null
     user.value = null
     localStorage.removeItem('token')

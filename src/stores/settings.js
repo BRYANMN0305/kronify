@@ -109,12 +109,37 @@ export const useSettingsStore = defineStore('settings', () => {
     await Promise.all([fetchPlan(), fetchPlanHistory()])
   }
 
+  /** reset — Limpia todo el estado al cambiar de sesión (evita datos de la cuenta anterior) */
+  const reset = () => {
+    profile.value = null
+    authMethods.value = []
+    businessData.value = null
+    invitations.value = []
+    plan.value = null
+    planHistory.value = []
+    availablePlans.value = []
+    ownerAsEmployee.value = false
+    loading.value = false
+    error.value = ''
+    Object.keys(loaded).forEach((key) => {
+      loaded[key] = false
+    })
+  }
+
   /**
    * fetchAll — Carga todos los datos del panel según el rol.
    * Primera vez: todas las peticiones en paralelo con spinner.
    * Visitas siguientes: usa la caché y revalida en silencio.
    */
+  let lastToken = null
   const fetchAll = async (isOwner, { silent } = {}) => {
+    // Si cambió la sesión (otra cuenta, otra pestaña, etc.), descarta la caché anterior
+    const currentToken = localStorage.getItem('token')
+    if (currentToken !== lastToken) {
+      reset()
+      lastToken = currentToken
+    }
+
     const hasData = loaded.profile
     const silentMode = silent ?? hasData
     if (!silentMode) loading.value = true
@@ -145,5 +170,6 @@ export const useSettingsStore = defineStore('settings', () => {
     ownerAsEmployee, loading, error, loaded,
     fetchProfile, fetchBusiness, fetchInvitations, fetchPlan, fetchPlanHistory,
     fetchAvailablePlans, fetchOwnerAsEmployee, toggleOwnerAsEmployee, changePlan, fetchAll,
+    reset,
   }
 })
