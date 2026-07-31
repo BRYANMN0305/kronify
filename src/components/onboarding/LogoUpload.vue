@@ -23,11 +23,7 @@
       </template>
       <template v-else>
         <div class="logo-placeholder">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
+          <span class="logo-placeholder-icon" v-html="imageIcon"></span>
           <span>Haz clic o arrastra una imagen aquí</span>
         </div>
       </template>
@@ -37,9 +33,10 @@
 
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
+import imageIcon from '@/assets/images/icons/image.svg?raw'
 
 const props = defineProps({
-  modelValue: { type: File, default: null },
+  modelValue: { type: [File, String], default: null },
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -49,9 +46,9 @@ const previewUrl = ref(null)
 
 watch(
   () => props.modelValue,
-  (file) => {
+  (val) => {
     revokePreview()
-    previewUrl.value = file ? URL.createObjectURL(file) : null
+    previewUrl.value = val instanceof File ? URL.createObjectURL(val) : val
   },
   { immediate: true }
 )
@@ -125,7 +122,13 @@ function removeLogo() {
   padding: 1rem;
 }
 
+.logo-placeholder .logo-placeholder-icon {
+  display: inline-flex;
+}
+
 .logo-placeholder svg {
+  width: 28px;
+  height: 28px;
   opacity: 0.5;
 }
 

@@ -18,6 +18,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 // Estilos personalizados (variables primero, luego tema)
 import './assets/styles/variables.css'
 import './assets/styles/auth.css'
+import './assets/styles/settings.css'
 
 const app = createApp(App)
 

@@ -15,9 +15,7 @@
         @focus="open = true"
         @input="onInput"
       />
-      <svg class="category-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
+      <span class="category-chevron" v-html="chevronDownIcon"></span>
     </div>
     <div v-if="open" ref="panelRef" class="category-panel" :class="{ 'panel-above': panelAbove }">
       <button
@@ -39,6 +37,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import chevronDownIcon from '@/assets/images/icons/chevron-down.svg?raw'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -159,6 +158,12 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   margin-right: 0.7rem;
   transition: transform 0.2s;
   flex-shrink: 0;
+  display: inline-flex;
+}
+
+.category-chevron svg {
+  width: 14px;
+  height: 14px;
 }
 
 .category-trigger.is-open .category-chevron {
