@@ -19,6 +19,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './assets/styles/variables.css'
 import './assets/styles/auth.css'
 import './assets/styles/settings.css'
+import './assets/styles/services.css'
 
 const app = createApp(App)
 

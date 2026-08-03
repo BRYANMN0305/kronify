@@ -57,5 +57,8 @@ export const request = async (endpoint, options = {}) => {
     throw err
   }
 
-  return res.json()
+  // 204 No Content (p. ej. DELETE): no hay cuerpo que parsear
+  if (res.status === 204) return null
+
+  return res.json().catch(() => null)
 }
