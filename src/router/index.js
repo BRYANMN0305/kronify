@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes'
 import businessRoutes from './routes/business.routes'
 import settingsRoutes from './routes/settings.routes'
 import { authGuard } from './guards'
+import publicRoutes from './routes/public.routes'
 
 /** Lista completa de rutas */
 const routes = [
@@ -19,6 +20,9 @@ const routes = [
 
   // Rutas de negocio: /onboarding-negocio
   ...businessRoutes,
+
+  // Rutas públicas: /negocio/:slug
+  ...publicRoutes,
 
   // Rutas de configuración: /settings
   ...settingsRoutes,
