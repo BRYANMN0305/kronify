@@ -1,33 +1,25 @@
-import { useAuthStore } from '@/stores/auth'
+/**
+ * business.js — Servicio de llamadas HTTP del negocio
+ * ======================================================
+ * Usa fetch nativo (request de ./http) con token JWT.
+ * ======================================================
+ */
 
-const BASE_URL = import.meta.env.VITE_API_URL || ''
+import { request } from './http'
 
-async function request(endpoint, options = {}) {
-  const store = useAuthStore()
-  const isFormData = options.body instanceof FormData
-  const headers = {
-    ...options.headers,
-  }
-  if (!isFormData) {
-    headers['Content-Type'] = 'application/json'
-  }
-  if (store.token) {
-    headers['Authorization'] = `Bearer ${store.token}`
-  }
-  const res = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers })
-  if (!res.ok) {
-    if (res.status === 404) return null
-    const err = await res.json().catch(() => ({ message: res.statusText }))
-    throw new Error(err.message || `HTTP ${res.status}`)
-  }
-  return res.json()
-}
-
+/** businessService — Métodos del negocio */
 export const businessService = {
-  getMe() {
-    return request('/business/me', { method: 'GET' })
+  /** getMe — Obtiene el negocio del usuario (null si no tiene) */
+  async getMe() {
+    try {
+      return await request('/business/me', { method: 'GET' })
+    } catch (err) {
+      if (err.status === 404) return null
+      throw err
+    }
   },
 
+  /** create — Crea el negocio */
   create(payload) {
     return request('/business/', {
       method: 'POST',
@@ -35,6 +27,28 @@ export const businessService = {
     })
   },
 
+  /** update — Actualiza los datos del negocio */
+  update(payload) {
+    return request('/business/', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  /** toggleOwnerAsEmployee — Activa/desactiva el dueño como empleado */
+  toggleOwnerAsEmployee(enabled) {
+    return request('/business/employees/owner/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ enabled }),
+    })
+  },
+
+  /** getEmployees — Lista los empleados del negocio (incluye al dueño si es empleado) */
+  getEmployees() {
+    return request('/business/employees/', { method: 'GET' })
+  },
+
+  /** uploadImage — Sube el logo del negocio */
   uploadImage(file) {
     const formData = new FormData()
     formData.append('file', file)

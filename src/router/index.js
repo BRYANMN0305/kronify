@@ -9,6 +9,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import authRoutes from './routes/auth.routes'
 import businessRoutes from './routes/business.routes'
+import settingsRoutes from './routes/settings.routes'
 import { authGuard } from './guards'
 import publicRoutes from './routes/public.routes'
 
@@ -22,6 +23,9 @@ const routes = [
 
   // Rutas públicas: /negocio/:slug
   ...publicRoutes,
+
+  // Rutas de configuración: /settings
+  ...settingsRoutes,
 
   // Redirección raíz → login
   {

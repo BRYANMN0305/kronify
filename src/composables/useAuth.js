@@ -19,7 +19,7 @@ import { authService } from '@/api/auth'
  * useAuth — Hook de autenticación
  * @returns {{ login, register, loginWithOAuth, loading, error }}
  */
-export function useAuth() {
+export const useAuth = () => {
   const router = useRouter()
   const store = useAuthStore()
   const loading = ref(false)   // indica si hay una petición en curso
@@ -29,7 +29,7 @@ export function useAuth() {
    * login — Inicia sesión con email y contraseña
    * @param {{ email: string, password: string }} credenciales
    */
-  async function login(credenciales) {
+  const login = async (credenciales) => {
     loading.value = true
     error.value = null
     try {
@@ -45,7 +45,7 @@ export function useAuth() {
   }
 
   /** register — Registra al usuario, guarda el token y redirige */
-  async function register(payload) {
+  const register = async (payload) => {
     loading.value = true
     error.value = null
     try {
@@ -69,7 +69,7 @@ export function useAuth() {
    * loginWithOAuth — Redirige al proveedor OAuth para autenticación
    * @param {'google'|'microsoft'} proveedor
    */
-  function loginWithOAuth(proveedor) {
+  const loginWithOAuth = (proveedor) => {
     const baseUrl = import.meta.env.VITE_API_URL || ''
     window.location.href = `${baseUrl}/api/auth/${proveedor}`
   }

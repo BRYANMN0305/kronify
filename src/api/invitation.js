@@ -1,27 +1,34 @@
-import { useAuthStore } from '@/stores/auth'
+/**
+ * invitation.js — Servicio de llamadas HTTP de invitaciones
+ * ======================================================
+ * Usa fetch nativo (request de ./http) con token JWT.
+ * ======================================================
+ */
 
-const BASE_URL = import.meta.env.VITE_API_URL || ''
+import { request } from './http'
 
-async function request(endpoint, options = {}) {
-  const store = useAuthStore()
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  }
-  if (store.token) {
-    headers['Authorization'] = `Bearer ${store.token}`
-  }
-  
-  const res = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: res.statusText }))
-    throw new Error(err.message || `HTTP ${res.status}`)
-  }
-  return res.json()
-}
-
+/** invitationService — Métodos de invitaciones */
 export const invitationService = {
-  getPending() {
-    return request('/invitations/pending', { method: 'GET' })
+  /** getAll — Obtiene las invitaciones del negocio */
+  getAll() {
+    return request('/business/invitations/', { method: 'GET' })
+  },
+
+  /** create — Crea una invitación a un empleado */
+  create(email) {
+    return request('/business/invitations/', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  },
+
+  /** resend — Reenvía una invitación pendiente */
+  resend(invitationId) {
+    return request(`/business/invitations/${invitationId}/resend`, { method: 'POST' })
+  },
+
+  /** cancel — Cancela una invitación pendiente */
+  cancel(invitationId) {
+    return request(`/business/invitations/${invitationId}/cancel`, { method: 'POST' })
   },
 }

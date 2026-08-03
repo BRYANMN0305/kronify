@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { businessService } from '@/api/business'
-import { employeeService } from '@/api/employee'
-import { invitationService } from '@/api/invitation'
 
 export const useBusinessStore = defineStore('business', () => {
   const business = ref(null)
@@ -19,31 +17,41 @@ export const useBusinessStore = defineStore('business', () => {
     return !hasBusiness.value && !hasEmployee.value && !hasPendingInvitation.value
   })
 
-  async function fetchStatus() {
+  let lastToken = null
+  const fetchStatus = async () => {
+    // Si cambió la sesión (otra cuenta, otra pestaña, etc.), descarta el estado anterior
+    const currentToken = localStorage.getItem('token')
+    if (currentToken !== lastToken) {
+      reset()
+      lastToken = currentToken
+    }
+
     loading.value = true
     try {
-      const [b, e, i] = await Promise.allSettled([
-        businessService.getMe().catch(() => null),
-        employeeService.getMine().catch(() => []),
-        invitationService.getPending().catch(() => []),
-      ])
-      business.value = b.status === 'fulfilled' ? b.value : null
-      employees.value = e.status === 'fulfilled' ? e.value : []
-      pendingInvitations.value = i.status === 'fulfilled' ? i.value : []
+      business.value = await businessService.getMe()
       fetched.value = true
     } finally {
       loading.value = false
     }
   }
 
-  async function createBusiness(payload) {
+  const createBusiness = async (payload) => {
     business.value = await businessService.create(payload)
     fetched.value = true
+  }
+
+  /** reset — Limpia el estado al cambiar de sesión (evita datos de la cuenta anterior) */
+  const reset = () => {
+    business.value = null
+    employees.value = []
+    pendingInvitations.value = []
+    fetched.value = false
+    loading.value = false
   }
 
   return {
     business, employees, pendingInvitations, fetched, loading,
     hasBusiness, hasEmployee, hasPendingInvitation, needsOnboarding,
-    fetchStatus, createBusiness,
+    fetchStatus, createBusiness, reset,
   }
 })

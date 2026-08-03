@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  optimizeDeps: {
+    include: ['chart.js', 'vue-chartjs', 'dayjs', 'jwt-decode'],
+  },
   build: {
     outDir: 'dist',
   },

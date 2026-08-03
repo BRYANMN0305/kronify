@@ -2,7 +2,11 @@
   <div class="dashboard-container">
     <h1>Panel de control</h1>
     <p>Bienvenido, {{ store.user?.name || 'Usuario' }}</p>
-    <button class="btn btn-outline-light" @click="handleLogout">Cerrar Sesión</button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-light" @click="goToServices">Servicios</button>
+      <button class="btn btn-outline-light" @click="goToSettings">Configuración</button>
+      <button class="btn btn-outline-danger" @click="handleLogout">Cerrar Sesión</button>
+    </div>
   </div>
 </template>
 
@@ -13,7 +17,15 @@ import { useRouter } from 'vue-router'
 const store = useAuthStore()
 const router = useRouter()
 
-function handleLogout() {
+const goToServices = () => {
+  router.push({ name: 'Services' })
+}
+
+const goToSettings = () => {
+  router.push({ name: 'Settings' })
+}
+
+const handleLogout = () => {
   store.logout()
   router.push({ name: 'Login' })
 }
