@@ -14,11 +14,9 @@
 }
 
 .settings-header {
-    /* El layout inicia en la posición del contenedor centrado anterior (sidebar a la izquierda)
-       y se estira solo hacia la derecha hasta el borde de la pantalla. */
-    margin-left: max(1.5rem, calc((100vw - 1080px) / 2));
+    margin-left: 1.5rem;
     margin-right: 1.5rem;
-    padding: 2rem 0 0;
+    padding: 1.5rem 0 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -65,14 +63,12 @@
 
 /* ---- Layout: sidebar + contenido ---- */
 .settings-layout {
-    /* Misma posición de inicio que antes: sidebar a la izquierda en su lugar,
-       contenido estirado hacia la derecha hasta ocupar el ancho de la pantalla. */
-    margin-left: max(1.5rem, calc((100vw - 1080px) / 2));
+    margin-left: 1.5rem;
     margin-right: 1.5rem;
-    padding: 1.5rem 0 4rem;
+    padding: 1.25rem 0 3rem;
     display: grid;
-    grid-template-columns: 250px minmax(0, 1fr);
-    gap: 2rem;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 1.5rem;
     align-items: start;
 }
 

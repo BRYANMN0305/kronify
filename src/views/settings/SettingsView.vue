@@ -77,7 +77,7 @@
  * Solo el dueño del negocio ve las secciones de negocio.
  */
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useBusinessStore } from '@/stores/business'
 import { useSettingsStore } from '@/stores/settings'
@@ -96,11 +96,18 @@ import usersIcon from '@/assets/images/icons/users.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const businessStore = useBusinessStore()
 const settingsStore = useSettingsStore()
 
-const activeTab = ref('details')
+const validTabs = ['details', 'profile', 'plan', 'password', 'team']
+
+const activeTab = ref(validTabs.includes(String(route.query.tab)) ? String(route.query.tab) : 'details')
+
+watch(() => route.query.tab, (tab) => {
+  if (validTabs.includes(String(tab))) activeTab.value = String(tab)
+})
 
 /** isOwner — Solo el dueño del negocio ve Perfil del negocio y Equipo */
 const isOwner = computed(() => authStore.isBusiness && businessStore.hasBusiness)

@@ -12,7 +12,6 @@
 
       <div class="service-title-wrap">
         <h3 class="service-name" :title="service.name">{{ service.name }}</h3>
-        <span class="status-badge status-active">Activo</span>
       </div>
 
       <div class="service-head-actions">
