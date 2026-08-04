@@ -1,12 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <h1>Panel de control</h1>
-    <p>Bienvenido, {{ store.user?.name || 'Usuario' }}</p>
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-light" @click="goToServices">Servicios</button>
-      <button class="btn btn-outline-light" @click="goToSettings">Configuración</button>
-      <button class="btn btn-outline-danger" @click="handleLogout">Cerrar Sesión</button>
-    </div>
+    <h1>Calendario</h1>
   </div>
 </template>
 
@@ -34,8 +28,7 @@ const handleLogout = () => {
 <style scoped>
 .dashboard-container {
   min-height: 100vh;
-  background-color: var(--color-surface);
-  color: var(--color-text-muted);
-  padding: 2rem;
+  color: var(--color-text);
+  padding: 1.5rem;
 }
 </style>
