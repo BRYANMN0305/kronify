@@ -8,7 +8,7 @@
      ============================================================ -->
 
 <template>
-  <div class="settings-tab">
+  <div class="settings-tab" id="plan-tab">
   <!-- Sección: Plan actual -->
   <section class="settings-section">
     <div class="settings-section-header">
