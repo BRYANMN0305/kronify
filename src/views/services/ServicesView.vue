@@ -9,7 +9,7 @@
   <div class="services-page">
     <header class="services-header">
       <h1 class="services-title">Servicios</h1>
-      <button class="btn-back" @click="router.push('/dashboard')">
+      <button class="btn-back" @click="router.push('/calendario')">
         <span class="btn-back-icon" v-html="chevronLeftIcon"></span>
         Volver
       </button>

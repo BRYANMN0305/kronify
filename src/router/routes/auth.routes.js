@@ -1,8 +1,8 @@
 /**
  * auth.routes.js — Rutas de autenticación
  * ======================================================
- * - /login    → AuthView con LoginForm
- * - /register → AuthView con RegisterForm
+ * - /iniciar-sesion → AuthView con LoginForm
+ * - /registro       → AuthView con RegisterForm
  * ======================================================
  *
  * Ambas rutas comparten la MISMA referencia de componente
@@ -15,14 +15,14 @@ const AuthView = () => import('@/views/auth/AuthView.vue')
 
 export default [
   {
-    path: '/login',
-    name: 'Login',
+    path: '/iniciar-sesion',
+    name: 'IniciarSesion',
     component: AuthView,
     meta: { layout: 'auth', guest: true },
   },
   {
-    path: '/register',
-    name: 'Register',
+    path: '/registro',
+    name: 'Registro',
     component: AuthView,
     meta: { layout: 'auth', guest: true },
   },

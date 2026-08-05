@@ -3,9 +3,9 @@
  * ======================================================
  * authGuard:
  *   - Si la ruta es "guest" y el usuario ya está
- *     autenticado, redirige al Dashboard.
+ *     autenticado, redirige al Calendario.
  *   - Si la ruta requiere autenticación y no hay token,
- *     redirige al Login.
+ *     redirige a /iniciar-sesion.
  *   - Para usuarios BUSINESS sin negocio/employee/invitación,
  *     redirige a /onboarding-negocio.
  * ======================================================
@@ -21,14 +21,14 @@ import { useBusinessStore } from '@/stores/business'
 export const authGuard = async (to) => {
   const token = localStorage.getItem('token')
 
-  // Si la ruta es para invitados pero ya hay sesión → Dashboard
+  // Si la ruta es para invitados pero ya hay sesión → Calendario
   if (to.meta?.guest && token) {
-    return { name: 'Dashboard' }
+    return { name: 'Calendario' }
   }
 
-  // Si la ruta requiere auth y no hay token → Login
+  // Si la ruta requiere auth y no hay token → Iniciar sesión
   if (to.meta?.requiresAuth && !token) {
-    return { name: 'Login' }
+    return { name: 'IniciarSesion' }
   }
 
   // --- Onboarding check para BUSINESS users ---
@@ -46,12 +46,12 @@ export const authGuard = async (to) => {
         }
       }
 
-      if (businessStore.needsOnboarding && to.name !== 'OnboardingBusiness') {
-        return { name: 'OnboardingBusiness' }
+      if (businessStore.needsOnboarding && to.name !== 'OnboardingNegocio') {
+        return { name: 'OnboardingNegocio' }
       }
 
-      if (to.name === 'OnboardingBusiness' && !businessStore.needsOnboarding) {
-        return { name: 'Dashboard' }
+      if (to.name === 'OnboardingNegocio' && !businessStore.needsOnboarding) {
+        return { name: 'Calendario' }
       }
     }
   }
