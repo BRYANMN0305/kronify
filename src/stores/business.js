@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { businessService } from '@/api/business'
+import { employeeService } from '@/api/employee'
 
 export const useBusinessStore = defineStore('business', () => {
   const business = ref(null)
@@ -28,10 +29,27 @@ export const useBusinessStore = defineStore('business', () => {
 
     loading.value = true
     try {
-      business.value = await businessService.getMe()
+      ;[business.value] = await Promise.all([
+        businessService.getMe(),
+        loadMyEmployee(),
+      ])
       fetched.value = true
     } finally {
       loading.value = false
+    }
+  }
+
+  /**
+   * loadMyEmployee — Si el usuario es empleado activo de un negocio (p. ej.
+   * aceptó una invitación), lo registra para que no se le exija onboarding.
+   * Los errores se ignoran: un usuario sin rol de empleado se queda como está.
+   */
+  const loadMyEmployee = async () => {
+    try {
+      const me = await employeeService.getMyEmployee()
+      if (me) employees.value = [me]
+    } catch {
+      /* sin registro de empleado para este usuario */
     }
   }
 
