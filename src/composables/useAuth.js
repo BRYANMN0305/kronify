@@ -16,6 +16,19 @@ import { useBusinessStore } from '@/stores/business'
 import { authService } from '@/api/auth'
 
 /**
+ * resumePendingInvitation — Si el usuario venía de un link de invitación,
+ * redirige a la página de aceptación para procesar el token.
+ * @returns {string|null} token guardado, si existe
+ */
+const resumePendingInvitation = (router) => {
+  const token = sessionStorage.getItem('inviteToken')
+  if (!token) return null
+  sessionStorage.removeItem('inviteToken')
+  router.replace({ path: '/invitacion/aceptar', query: { token } })
+  return token
+}
+
+/**
  * useAuth — Hook de autenticación
  * @returns {{ login, register, loginWithOAuth, loading, error }}
  */
@@ -35,7 +48,7 @@ export const useAuth = () => {
     try {
       const { accessToken } = await authService.login(credenciales)
       store.setAuth({ token: accessToken })
-      router.push('/dashboard')
+      if (!resumePendingInvitation(router)) router.push('/dashboard')
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Login failed'
       throw error.value
@@ -52,12 +65,14 @@ export const useAuth = () => {
       const { accessToken } = await authService.register(payload)
       store.setAuth({ token: accessToken })
 
-      if (payload.profileType === 'BUSINESS') {
-        const businessStore = useBusinessStore()
-        await businessStore.fetchStatus()
-      }
+      if (!resumePendingInvitation(router)) {
+        if (payload.profileType === 'BUSINESS') {
+          const businessStore = useBusinessStore()
+          await businessStore.fetchStatus()
+        }
 
-      router.push('/dashboard')
+        router.push('/dashboard')
+      }
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Registration failed'
       throw error.value

@@ -30,6 +30,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import homeIcon from '@/assets/images/icons/home.svg?raw'
 import wrenchIcon from '@/assets/images/icons/wrench.svg?raw'
+import clockIcon from '@/assets/images/icons/clock.svg?raw'
 import settingsIcon from '@/assets/images/icons/settings.svg?raw'
 
 const route = useRoute()
@@ -38,6 +39,7 @@ const router = useRouter()
 const navItems = [
   { name: 'Dashboard', label: 'Home', path: '/dashboard', icon: homeIcon },
   { name: 'Services', label: 'Services', path: '/servicios', icon: wrenchIcon },
+  { name: 'Schedules', label: 'Horarios', path: '/horarios', icon: clockIcon },
   { name: 'Settings', label: 'Settings', path: '/settings', icon: settingsIcon },
 ]
 

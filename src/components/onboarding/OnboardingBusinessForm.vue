@@ -120,7 +120,28 @@
           </div>
         </template>
 
-        <!-- Paso 4: Activación -->
+        <!-- Paso 4: Horario de atención -->
+        <template v-else-if="currentStep === 4">
+          <p class="field-hint">Define los días y horas en que tu negocio está abierto. Los horarios de tus empleados no pueden salir de este rango.</p>
+
+          <div class="schedules-table">
+            <div class="schedules-week-row schedules-week-head">
+              <span>Día</span>
+              <span>Inicio</span>
+              <span>Fin</span>
+              <span></span>
+            </div>
+            <div v-for="row in hoursRows" :key="row.dayOfWeek" class="schedules-week-row">
+              <span class="schedules-week-day">{{ WEEK_LABELS[row.dayOfWeek - 1] }}</span>
+              <input v-model="row.start" type="time" class="form-control" :id="'ohstart-' + row.dayOfWeek" />
+              <input v-model="row.end" type="time" class="form-control" :id="'ohend-' + row.dayOfWeek" />
+              <span></span>
+            </div>
+          </div>
+          <div v-if="hoursError" class="onboarding-error">{{ hoursError }}</div>
+        </template>
+
+        <!-- Paso 5: Activación -->
         <template v-else>
           <div class="mb-3">
             <label for="bizActivationCode" class="form-label">Código de activación</label>
@@ -183,19 +204,24 @@ import { businessService } from '@/api/business'
 const router = useRouter()
 const businessStore = useBusinessStore()
 
-const totalSteps = 4
+const totalSteps = 5
 const currentStep = ref(1)
 const direction = ref(1)
 
 const transitionName = computed(() => direction.value === 1 ? 'slide-left' : 'slide-right')
 
-const stepTitles = ['Información básica', 'Contacto', 'Personalización', 'Activación']
+const stepTitles = ['Información básica', 'Contacto', 'Personalización', 'Horario de atención', 'Activación']
 const stepDescriptions = [
   'Lo esencial para identificar tu negocio',
   'Formas en que los clientes podrán contactarte',
   'Añade tu marca personal',
+  'Los días y horas en que tu negocio está abierto',
   'Configura tu plan de servicio',
 ]
+
+const WEEK_LABELS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+const blankHourDay = (dayOfWeek) => ({ dayOfWeek, start: '', end: '' })
+const hoursRows = reactive([1, 2, 3, 4, 5, 6, 7].map(blankHourDay))
 
 const form = reactive({
   name: '',
@@ -220,6 +246,7 @@ const errors = reactive({
 })
 
 const error = ref('')
+const hoursError = ref('')
 
 function generarSlug(texto) {
   return texto
@@ -240,6 +267,7 @@ function autoSlug() {
 
 function clearErrors() {
   Object.keys(errors).forEach((k) => (errors[k] = ''))
+  hoursError.value = ''
 }
 
 function validateStep(step) {
@@ -279,6 +307,27 @@ function validateStep(step) {
     if (!form.whatsApp.trim()) {
       errors.whatsApp = 'El WhatsApp es obligatorio'
       valido = false
+    }
+  }
+
+  if (step === 4) {
+    const configured = hoursRows.filter((r) => r.start || r.end)
+    if (configured.length === 0) {
+      hoursError.value = 'Configura al menos un día de atención para que se puedan hacer reservas'
+      valido = false
+    } else {
+      for (const row of configured) {
+        if (!row.start || !row.end) {
+          hoursError.value = `Completa la hora de inicio y de fin de ${WEEK_LABELS[row.dayOfWeek - 1]}`
+          valido = false
+          break
+        }
+        if (row.start >= row.end) {
+          hoursError.value = `La hora de inicio debe ser menor que la de fin en ${WEEK_LABELS[row.dayOfWeek - 1]}`
+          valido = false
+          break
+        }
+      }
     }
   }
 
@@ -322,6 +371,13 @@ async function handleSubmit() {
       email: form.email.trim(),
       phoneNumber: form.phoneNumber.trim(),
       whatsApp: form.whatsApp.trim(),
+      openingHours: hoursRows
+        .filter((row) => row.start && row.end)
+        .map((row) => ({
+          dayOfWeek: row.dayOfWeek,
+          startTime: `${row.start}:00`,
+          endTime: `${row.end}:00`,
+        })),
       activationCode: optionalText(form.activationCode),
     })
     router.push('/dashboard')
@@ -438,5 +494,17 @@ async function handleSubmit() {
 .slide-right-leave-to {
   opacity: 0;
   transform: translateX(20px);
+}
+
+@media (max-width: 480px) {
+  .slug-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .slug-prefix {
+    font-size: 0.78rem;
+    padding: 0.55rem 0.9rem 0.25rem;
+  }
 }
 </style>

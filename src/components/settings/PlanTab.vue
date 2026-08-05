@@ -145,11 +145,6 @@
       </div>
     </div>
 
-    <div v-if="success" class="settings-alert settings-alert-success mt-3">
-      <span v-html="checkIcon"></span>
-      <span>{{ success }}</span>
-    </div>
-
     <div v-if="error" class="settings-alert settings-alert-error mt-3">
       <span v-html="alertIcon"></span>
       <span>{{ error }}</span>
@@ -206,7 +201,6 @@ import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { useSettingsStore } from '@/stores/settings'
 
-import checkIcon from '@/assets/images/icons/check.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -244,7 +238,6 @@ const settingsStore = useSettingsStore()
 
 const codes = ref({})
 const changingPlanId = ref(null)
-const success = ref('')
 const error = ref('')
 
 const statusMeta = {
@@ -320,13 +313,11 @@ const usageItems = computed(() => {
 })
 
 const handleChangePlan = async (planId) => {
-  success.value = ''
   error.value = ''
   changingPlanId.value = planId
   try {
     await settingsStore.changePlan(planId, codes.value[planId]?.trim() || undefined)
     codes.value[planId] = ''
-    success.value = 'Plan actualizado correctamente'
   } catch (e) {
     error.value = e.message || 'Error al cambiar el plan'
   } finally {
