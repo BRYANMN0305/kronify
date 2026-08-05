@@ -13,8 +13,8 @@ const BASE_URL = import.meta.env.VITE_API_URL || ''
 const handleUnauthorized = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
-  if (!window.location.pathname.startsWith('/login')) {
-    window.location.assign('/login')
+  if (!window.location.pathname.startsWith('/iniciar-sesion')) {
+    window.location.assign('/iniciar-sesion')
   }
 }
 

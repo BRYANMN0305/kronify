@@ -12,16 +12,16 @@ const store = useAuthStore()
 const router = useRouter()
 
 const goToServices = () => {
-  router.push({ name: 'Services' })
+  router.push({ name: 'Servicios' })
 }
 
 const goToSettings = () => {
-  router.push({ name: 'Settings' })
+  router.push({ name: 'Configuracion' })
 }
 
 const handleLogout = () => {
   store.logout()
-  router.push({ name: 'Login' })
+  router.push({ name: 'IniciarSesion' })
 }
 </script>
 

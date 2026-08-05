@@ -85,6 +85,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
+import { usePermissions } from '@/composables/usePermissions'
 
 import gearIcon from '@/assets/images/icons/gear.svg?raw'
 import homeIcon from '@/assets/images/icons/home.svg?raw'
@@ -100,15 +101,24 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
+const { isOwner, canManageServices, canManageSchedules } = usePermissions()
 
 const userMenuOpen = ref(false)
 
-const navItems = [
-  { name: 'Dashboard', label: 'Calendario', path: '/dashboard', icon: homeIcon },
-  { name: 'Services', label: 'Servicios', path: '/servicios', icon: wrenchIcon },
-  { name: 'Schedules', label: 'Horarios', path: '/horarios', icon: clockIcon },
-  { name: 'Settings', label: 'Configuración', path: '/settings', icon: settingsIcon },
-]
+/** navItems — Solo las secciones a las que el usuario tiene permiso */
+const navItems = computed(() => {
+  const items = [
+    { name: 'Calendario', label: 'Calendario', path: '/calendario', icon: homeIcon },
+  ]
+  if (canManageSchedules.value) {
+    items.push({ name: 'Horarios', label: 'Horarios', path: '/horarios', icon: clockIcon })
+  }
+  if (canManageServices.value) {
+    items.push({ name: 'Servicios', label: 'Servicios', path: '/servicios', icon: wrenchIcon })
+  }
+  items.push({ name: 'Configuracion', label: 'Configuración', path: '/configuracion', icon: settingsIcon })
+  return items
+})
 
 const isActive = (name) => route.name === name
 
@@ -119,11 +129,11 @@ const navigate = (item) => {
 const handleLogout = () => {
   userMenuOpen.value = false
   authStore.logout()
-  router.push({ name: 'Login' })
+  router.push({ name: 'IniciarSesion' })
 }
 
 const goToPlan = () => {
-  router.push({ name: 'Settings', query: { tab: 'plan' } })
+  router.push({ name: 'Configuracion', query: { tab: 'plan' } })
 }
 
 const closeMenu = (e) => {
@@ -157,8 +167,8 @@ const isFreePlan = computed(() => {
   return freeNames.some((k) => name.includes(k)) || ['TRIAL', 'EXPIRED', 'CANCELLED'].includes(status)
 })
 
-/** showUpgradeCard — Solo si el usuario es dueño de negocio y está en plan free */
-const showUpgradeCard = computed(() => authStore.isBusiness && isFreePlan.value)
+/** showUpgradeCard — Solo si el usuario es dueño del negocio y está en plan free */
+const showUpgradeCard = computed(() => isOwner.value && isFreePlan.value)
 
 onMounted(() => {
   if (!settingsStore.loaded.profile) {

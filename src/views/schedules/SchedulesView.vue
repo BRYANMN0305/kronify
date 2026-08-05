@@ -16,7 +16,7 @@
         <h1 class="schedules-title">Horarios</h1>
         <p class="schedules-subtitle">Configura la disponibilidad y los servicios de tu equipo</p>
       </div>
-      <button type="button" class="btn-back" @click="router.push('/dashboard')">
+      <button type="button" class="btn-back" @click="router.push('/calendario')">
         <span class="btn-back-icon" v-html="chevronLeftIcon"></span>
         Volver
       </button>
