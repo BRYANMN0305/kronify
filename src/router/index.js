@@ -13,14 +13,20 @@ import settingsRoutes from './routes/settings.routes'
 import { authGuard } from './guards'
 import publicRoutes from './routes/public.routes'
 
-/** Rutas autenticadas envueltas en el AppLayout (sidebar) */
+/**
+ * Layout de rutas autenticadas (sidebar).
+ * El path '/app' es solo para que el layout no matchee la raíz '/'
+ * (un record sin path la captura e impide el redirect a /iniciar-sesion).
+ * Los hijos usan paths absolutos, así que siguen matcheando dentro del layout.
+ */
 const authLayout = {
+  path: '/app',
   component: () => import('@/layouts/AppLayout.vue'),
   children: [
-    // Dashboard (protegida)
+    // Calendario (protegida)
     {
-      path: '/dashboard',
-      name: 'Dashboard',
+      path: '/calendario',
+      name: 'Calendario',
       component: () => import('@/views/dashboard/DashboardView.vue'),
       meta: { requiresAuth: true },
     },
@@ -28,7 +34,7 @@ const authLayout = {
     // Servicios
     {
       path: '/servicios',
-      name: 'Services',
+      name: 'Servicios',
       component: () => import('@/views/services/ServicesView.vue'),
       meta: { requiresAuth: true },
     },
@@ -36,19 +42,19 @@ const authLayout = {
     // Horarios
     {
       path: '/horarios',
-      name: 'Schedules',
+      name: 'Horarios',
       component: () => import('@/views/schedules/SchedulesView.vue'),
       meta: { requiresAuth: true },
     },
 
-    // Rutas de configuración: /settings
+    // Rutas de configuración: /configuracion
     ...settingsRoutes,
   ],
 }
 
 /** Lista completa de rutas */
 const routes = [
-  // Rutas de autenticación: /login, /register
+  // Rutas de autenticación: /iniciar-sesion, /registro
   ...authRoutes,
 
   // Rutas públicas: /negocio/:slug
@@ -57,7 +63,7 @@ const routes = [
   // Aceptación de invitación de empleado (accesible con y sin sesión)
   {
     path: '/invitacion/aceptar',
-    name: 'InvitationAccept',
+    name: 'AceptarInvitacion',
     component: () => import('@/views/invitation/InvitationAcceptView.vue'),
   },
 
@@ -67,10 +73,10 @@ const routes = [
   // Rutas autenticadas con AppLayout
   authLayout,
 
-  // Redirección raíz → login
+  // Redirección raíz → iniciar sesión
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/iniciar-sesion',
   },
 ]
 

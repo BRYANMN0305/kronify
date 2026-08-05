@@ -380,7 +380,7 @@ async function handleSubmit() {
         })),
       activationCode: optionalText(form.activationCode),
     })
-    router.push('/dashboard')
+    router.push('/calendario')
   } catch (e) {
     error.value = e.message || 'Error al crear el negocio'
   }

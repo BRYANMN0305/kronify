@@ -39,8 +39,8 @@ import RegisterForm from '@/components/auth/RegisterForm.vue'
 const route = useRoute()
 const router = useRouter()
 
-// Estado del formulario actual: true = register, false = login
-const showRegister = ref(route.name === 'Register')
+// Estado del formulario actual: true = registro, false = inicio de sesión
+const showRegister = ref(route.name === 'Registro')
 
 // Dirección del slide: 'slide-left' (login → register)
 //                    'slide-right' (register → login)
@@ -50,7 +50,7 @@ const direccion = ref('slide-left')
 watch(
     () => route.name,
     (nuevoNombre) => {
-      showRegister.value = nuevoNombre === 'Register'
+      showRegister.value = nuevoNombre === 'Registro'
     }
 )
 
@@ -58,14 +58,14 @@ watch(
 function irARegister() {
   direccion.value = 'slide-left'
   showRegister.value = true
-  router.push({name: 'Register'})
+  router.push({name: 'Registro'})
 }
 
-/** Cambia al formulario de login con slide derecha */
+/** Cambia al formulario de inicio de sesión con slide derecha */
 function irALogin() {
   direccion.value = 'slide-right'
   showRegister.value = false
-  router.push({name: 'Login'})
+  router.push({name: 'IniciarSesion'})
 }
 </script>
 

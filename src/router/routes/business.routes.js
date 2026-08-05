@@ -1,7 +1,7 @@
-/** OnboardingBusiness — Ruta de pantalla completa (sin sidebar) */
+/** OnboardingNegocio — Ruta de pantalla completa (sin sidebar) */
 export const OnboardingBusiness = {
   path: '/onboarding-negocio',
-  name: 'OnboardingBusiness',
+  name: 'OnboardingNegocio',
   component: () => import('@/views/onboarding/OnboardingBusinessView.vue'),
   meta: { requiresAuth: true },
 }

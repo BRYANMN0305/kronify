@@ -24,7 +24,7 @@ const authStore = useAuthStore()
 
 function handleBack() {
   authStore.logout()
-  router.push({ name: 'Login' })
+  router.push({ name: 'IniciarSesion' })
 }
 </script>
 

@@ -48,7 +48,7 @@ export const useAuth = () => {
     try {
       const { accessToken } = await authService.login(credenciales)
       store.setAuth({ token: accessToken })
-      if (!resumePendingInvitation(router)) router.push('/dashboard')
+      if (!resumePendingInvitation(router)) router.push('/calendario')
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Login failed'
       throw error.value
@@ -71,7 +71,7 @@ export const useAuth = () => {
           await businessStore.fetchStatus()
         }
 
-        router.push('/dashboard')
+        router.push('/calendario')
       }
     } catch (e) {
       error.value = e?.response?.data?.message || e.message || 'Registration failed'

@@ -43,7 +43,7 @@
         <button type="button" class="btn btn-primary w-100 mt-3" @click="router.push('/horarios')">
           Ir a mis horarios
         </button>
-        <button type="button" class="btn btn-ghost-inline w-100 mt-2" @click="router.push('/dashboard')">
+        <button type="button" class="btn btn-ghost-inline w-100 mt-2" @click="router.push('/calendario')">
           Ir al calendario
         </button>
       </template>
@@ -85,12 +85,12 @@ const resultError = ref('')
 
 const goToRegister = () => {
   sessionStorage.setItem('inviteToken', token.value)
-  router.push({ name: 'Register' })
+  router.push({ name: 'Registro' })
 }
 
 const goToLogin = () => {
   sessionStorage.setItem('inviteToken', token.value)
-  router.push({ name: 'Login' })
+  router.push({ name: 'IniciarSesion' })
 }
 
 onMounted(async () => {

@@ -11,7 +11,7 @@
   <div class="settings-page">
     <header class="settings-header">
       <h1 class="settings-title">Configuración</h1>
-      <button class="btn-back" @click="router.push('/dashboard')">
+      <button class="btn-back" @click="router.push('/calendario')">
         <span class="btn-back-icon" v-html="chevronLeftIcon"></span>
         Volver
       </button>

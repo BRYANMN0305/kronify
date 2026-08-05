@@ -2,7 +2,8 @@
      BottomNav.vue — Barra de navegación inferior (mobile)
      ============================================================
      Visible solo en pantallas <= 768px (CSS).
-     Muestra los mismos items de navegación que el sidebar.
+     Muestra los mismos items de navegación que el sidebar,
+     filtrados por los permisos del usuario.
      ============================================================ -->
 
 <template>
@@ -26,7 +27,9 @@
  * BottomNav.vue
  * Barra inferior fija para mobile. Reemplaza al sidebar en pantallas pequeñas.
  */
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { usePermissions } from '@/composables/usePermissions'
 
 import homeIcon from '@/assets/images/icons/home.svg?raw'
 import wrenchIcon from '@/assets/images/icons/wrench.svg?raw'
@@ -35,13 +38,21 @@ import settingsIcon from '@/assets/images/icons/settings.svg?raw'
 
 const route = useRoute()
 const router = useRouter()
+const { canManageServices, canManageSchedules } = usePermissions()
 
-const navItems = [
-  { name: 'Dashboard', label: 'Home', path: '/dashboard', icon: homeIcon },
-  { name: 'Services', label: 'Services', path: '/servicios', icon: wrenchIcon },
-  { name: 'Schedules', label: 'Horarios', path: '/horarios', icon: clockIcon },
-  { name: 'Settings', label: 'Settings', path: '/settings', icon: settingsIcon },
-]
+const navItems = computed(() => {
+  const items = [
+    { name: 'Calendario', label: 'Calendario', path: '/calendario', icon: homeIcon },
+  ]
+  if (canManageSchedules.value) {
+    items.push({ name: 'Horarios', label: 'Horarios', path: '/horarios', icon: clockIcon })
+  }
+  if (canManageServices.value) {
+    items.push({ name: 'Servicios', label: 'Servicios', path: '/servicios', icon: wrenchIcon })
+  }
+  items.push({ name: 'Configuracion', label: 'Configuración', path: '/configuracion', icon: settingsIcon })
+  return items
+})
 
 const isActive = (name) => route.name === name
 

@@ -164,6 +164,14 @@
       </li>
     </ul>
   </section>
+
+  <!-- Sección: Cerrar sesión (solo mobile; en desktop está en el sidebar) -->
+  <section class="settings-section settings-logout-mobile">
+    <button type="button" class="settings-logout-btn" @click="handleLogout">
+      <span class="settings-logout-icon" v-html="logOutIcon"></span>
+      Cerrar sesión
+    </button>
+  </section>
   </div>
 </template>
 
@@ -173,6 +181,7 @@
  * Datos personales del usuario en solo lectura con modo edición.
  */
 import { reactive, ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { useAuthStore } from '@/stores/auth'
 import { useBusinessStore } from '@/stores/business'
@@ -182,7 +191,9 @@ import { userService } from '@/api/user'
 import pencilIcon from '@/assets/images/icons/pencil.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 import mailIcon from '@/assets/images/icons/mail.svg?raw'
+import logOutIcon from '@/assets/images/icons/log-out.svg?raw'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const businessStore = useBusinessStore()
 const settingsStore = useSettingsStore()
@@ -288,4 +299,55 @@ const handleSubmit = async () => {
     saving.value = false
   }
 }
+
+/** handleLogout — Cierra la sesión y vuelve a /iniciar-sesion (solo mobile) */
+const handleLogout = () => {
+  authStore.logout()
+  router.push({ name: 'IniciarSesion' })
+}
 </script>
+
+<style scoped>
+/* Cerrar sesión: oculto en desktop (el sidebar ya lo ofrece) */
+.settings-logout-mobile {
+  display: none;
+}
+
+.settings-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: rgba(255, 138, 138, 0.85);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.settings-logout-btn:hover {
+  color: #ff8a8a;
+  background: rgba(255, 107, 107, 0.08);
+  border-color: rgba(255, 107, 107, 0.35);
+}
+
+.settings-logout-icon {
+  display: inline-flex;
+}
+
+.settings-logout-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .settings-logout-mobile {
+    display: block;
+  }
+}
+</style>
