@@ -20,6 +20,8 @@ import './assets/styles/variables.css'
 import './assets/styles/auth.css'
 import './assets/styles/settings.css'
 import './assets/styles/services.css'
+import './assets/styles/schedules.css'
+import './assets/styles/forms.css'
 import './assets/styles/sidebar.css'
 
 const app = createApp(App)

@@ -31,4 +31,12 @@ export const invitationService = {
   cancel(invitationId) {
     return request(`/business/invitations/${invitationId}/cancel`, { method: 'POST' })
   },
+
+  /** accept — Acepta una invitación usando el token del correo */
+  accept(token) {
+    return request('/business/invitations/accept', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    })
+  },
 }

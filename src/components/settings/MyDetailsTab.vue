@@ -122,17 +122,12 @@
         </div>
       </div>
 
-      <div class="d-flex gap-2 mt-4">
+      <div class="d-flex gap-2 mt-4 settings-form-actions">
         <button type="submit" class="btn btn-primary" :disabled="saving">
           <span v-if="saving" class="spinner-border spinner-border-sm me-2" role="status"></span>
           {{ saving ? 'Guardando...' : 'Guardar cambios' }}
         </button>
         <button type="button" class="btn-ghost" @click="cancelEdit">Cancelar</button>
-      </div>
-
-      <div v-if="success" class="settings-alert settings-alert-success">
-        <span v-html="checkIcon"></span>
-        <span>{{ success }}</span>
       </div>
 
       <div v-if="error" class="settings-alert settings-alert-error">
@@ -185,7 +180,6 @@ import { useSettingsStore } from '@/stores/settings'
 import { userService } from '@/api/user'
 
 import pencilIcon from '@/assets/images/icons/pencil.svg?raw'
-import checkIcon from '@/assets/images/icons/check.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 import mailIcon from '@/assets/images/icons/mail.svg?raw'
 
@@ -202,7 +196,6 @@ const form = reactive({
 const errors = reactive({ name: '', lastName: '' })
 const editing = ref(false)
 const saving = ref(false)
-const success = ref('')
 const error = ref('')
 
 const initials = computed(() => {
@@ -252,14 +245,12 @@ const methodIcon = (m) => {
 
 const startEdit = () => {
   fillForm()
-  success.value = ''
   error.value = ''
   editing.value = true
 }
 
 const cancelEdit = () => {
   editing.value = false
-  success.value = ''
   error.value = ''
   Object.keys(errors).forEach((k) => (errors[k] = ''))
 }
@@ -281,7 +272,6 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
   saving.value = true
-  success.value = ''
   error.value = ''
   try {
     const payload = {
@@ -292,7 +282,6 @@ const handleSubmit = async () => {
     const updated = await userService.updateProfile(payload)
     settingsStore.profile = { ...settingsStore.profile, ...updated }
     editing.value = false
-    success.value = 'Cambios guardados correctamente'
   } catch (e) {
     error.value = e.message || 'Error al guardar los cambios'
   } finally {

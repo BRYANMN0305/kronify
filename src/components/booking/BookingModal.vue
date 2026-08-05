@@ -41,7 +41,7 @@
 
         <!-- Paso 3: Fecha y horarios -->
         <div v-else-if="step === 3" class="step-date">
-          <input type="date" v-model="selectedDate" :min="today" class="date-input" @change="loadAvailability" />
+          <input type="date" v-model="selectedDate" :min="today" class="form-control" @change="loadAvailability" />
 
           <div v-if="loadingSlots" class="empty-message">Cargando horarios...</div>
           <div v-else-if="slots.length === 0" class="empty-message">No hay horarios disponibles ese día.</div>
@@ -66,16 +66,16 @@
           </div>
 
           <label class="field-label">Nombre</label>
-          <input v-model="form.customerName" class="field-input" placeholder="Tu nombre" />
+          <input v-model="form.customerName" class="form-control" placeholder="Tu nombre" />
 
           <label class="field-label">Apellido</label>
-          <input v-model="form.customerLastName" class="field-input" placeholder="Tu apellido" />
+          <input v-model="form.customerLastName" class="form-control" placeholder="Tu apellido" />
 
           <label class="field-label">Teléfono</label>
-          <input v-model="form.customerPhone" class="field-input" placeholder="Tu teléfono" />
+          <input v-model="form.customerPhone" class="form-control" placeholder="Tu teléfono" />
 
           <label class="field-label">Email</label>
-          <input v-model="form.customerEmail" type="email" class="field-input" placeholder="Tu email" />
+          <input v-model="form.customerEmail" type="email" class="form-control" placeholder="Tu email" />
 
           <p v-if="submitError" class="error-message">{{ submitError }}</p>
 
@@ -266,11 +266,10 @@ function formatDate(dateStr) {
 .option-meta { color: var(--color-text-muted); font-size: 0.78rem; margin-top: 2px; }
 .option-price { color: var(--neon); font-weight: 600; font-size: 0.9rem; }
 
-.date-input {
-  width: 100%; background: var(--color-surface-alt); border: 1px solid var(--color-border);
-  color: var(--color-text); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 0.9rem;
-}
 .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+@media (max-width: 420px) {
+  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+}
 .slot-btn {
   background: var(--color-surface-alt); border: 1px solid var(--color-border); color: var(--color-text);
   border-radius: 8px; padding: 10px 6px; font-size: 0.82rem; cursor: pointer; text-align: center;
@@ -284,10 +283,6 @@ function formatDate(dateStr) {
 }
 .summary-meta { color: var(--neon); font-size: 0.82rem; margin-top: 2px; }
 .field-label { display: block; color: var(--color-text-label); font-size: 0.8rem; margin: 10px 0 4px; }
-.field-input {
-  width: 100%; background: var(--color-surface-alt); border: 1px solid var(--color-border);
-  color: var(--color-text); border-radius: 8px; padding: 10px 12px; font-size: 0.9rem;
-}
 .error-message { color: var(--color-error); font-size: 0.82rem; margin-top: 10px; }
 .btn-confirm {
   width: 100%; background: var(--neon); color: var(--color-bg); border: none; font-weight: 600;

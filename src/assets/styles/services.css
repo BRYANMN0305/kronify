@@ -20,6 +20,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .services-title {
@@ -230,6 +231,7 @@
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .service-head-actions {
@@ -334,6 +336,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+    flex-wrap: wrap;
     padding-top: 0.6rem;
     border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }

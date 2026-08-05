@@ -86,4 +86,9 @@ onMounted(async () => {
 .employee-chip { background: var(--color-surface-alt); color: var(--color-text-label); border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.85rem; }
 .empty-message { color: var(--color-text-muted); font-size: 0.85rem; }
 .state-message { min-height: 60vh; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: var(--color-bg); }
+
+@media (max-width: 420px) {
+  .tabs { gap: 16px; padding: 0 16px; overflow-x: auto; }
+  .tab { padding: 10px 2px; }
+}
 </style>

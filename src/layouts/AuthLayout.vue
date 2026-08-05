@@ -7,7 +7,10 @@
      ============================================================ -->
 
 <template>
-  <div class="auth-page vh-100 d-flex">
+  <div
+      class="auth-page d-flex"
+      style="min-height: 100vh; min-height: 100dvh; overflow-x: hidden;"
+  >
 
     <!-- ============ PANEL IZQUIERDO ============ -->
     <!-- Hero visual: oculto en móviles (< lg), ocupa 45% en desktop -->
@@ -35,8 +38,14 @@
 
     <!-- ============ PANEL DERECHO ============ -->
     <!-- Contenedor del formulario (LoginForm o RegisterForm) -->
-    <div class="flex-grow-1 d-flex align-items-center justify-content-center p-4" style="overflow-y: auto;">
-      <div class="auth-card w-100 py-3" style="max-width: 400px;">
+    <div class="flex-grow-1 d-flex flex-column p-4" style="overflow-y: auto;">
+      <!-- Botón volver al sitio web solo en móvil/tablet (< lg) -->
+      <div class="d-lg-none w-100 mb-3" style="position: relative; z-index: 1;">
+        <BackToWebsiteButtom />
+      </div>
+      <!-- margin: auto centra y, si el form es más alto que la pantalla,
+           nunca corta el inicio (se puede hacer scroll desde arriba) -->
+      <div class="auth-card w-100 py-3" style="max-width: 400px; margin: auto;">
         <slot />
       </div>
     </div>

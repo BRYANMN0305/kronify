@@ -60,16 +60,11 @@
         </div>
       </div>
 
-      <div class="d-flex gap-2 mt-4">
+      <div class="d-flex gap-2 mt-4 settings-form-actions">
         <button type="submit" class="btn btn-primary" :disabled="saving">
           <span v-if="saving" class="spinner-border spinner-border-sm me-2" role="status"></span>
           {{ saving ? 'Actualizando...' : 'Actualizar contraseña' }}
         </button>
-      </div>
-
-      <div v-if="success" class="settings-alert settings-alert-success">
-        <span v-html="checkIcon"></span>
-        <span>{{ success }}</span>
       </div>
 
       <div v-if="error" class="settings-alert settings-alert-error">
@@ -89,7 +84,6 @@
 import { reactive, ref } from 'vue'
 import { userService } from '@/api/user'
 
-import checkIcon from '@/assets/images/icons/check.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 
 const form = reactive({
@@ -100,7 +94,6 @@ const form = reactive({
 
 const errors = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })
 const saving = ref(false)
-const success = ref('')
 const error = ref('')
 
 const validate = () => {
@@ -130,7 +123,6 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
   saving.value = true
-  success.value = ''
   error.value = ''
   try {
     await userService.updatePassword({
@@ -140,7 +132,6 @@ const handleSubmit = async () => {
     form.currentPassword = ''
     form.newPassword = ''
     form.confirmPassword = ''
-    success.value = 'Contraseña actualizada correctamente'
   } catch (e) {
     error.value = e.message || 'Error al actualizar la contraseña'
   } finally {

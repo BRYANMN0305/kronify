@@ -27,11 +27,6 @@
     </label>
   </div>
 
-  <div v-if="toggleSuccess" class="settings-alert settings-alert-success">
-    <span v-html="checkIcon"></span>
-    <span>{{ toggleSuccess }}</span>
-  </div>
-
   <div v-if="toggleError" class="settings-alert settings-alert-error">
     <span v-html="alertIcon"></span>
     <span>{{ toggleError }}</span>
@@ -208,17 +203,12 @@
       </div>
     </div>
 
-    <div class="d-flex gap-2 mt-4">
+    <div class="d-flex gap-2 mt-4 settings-form-actions">
       <button type="submit" class="btn btn-primary" :disabled="saving">
         <span v-if="saving" class="spinner-border spinner-border-sm me-2" role="status"></span>
         {{ saving ? 'Guardando...' : 'Guardar cambios' }}
       </button>
       <button type="button" class="btn-ghost" @click="cancelEdit">Cancelar</button>
-    </div>
-
-    <div v-if="success" class="settings-alert settings-alert-success">
-      <span v-html="checkIcon"></span>
-      <span>{{ success }}</span>
     </div>
 
     <div v-if="error" class="settings-alert settings-alert-error">
@@ -241,7 +231,6 @@ import { businessService } from '@/api/business'
 import CategoryDropdown from '@/components/onboarding/CategoryDropdown.vue'
 import LogoUpload from '@/components/onboarding/LogoUpload.vue'
 
-import checkIcon from '@/assets/images/icons/check.svg?raw'
 import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 import pencilIcon from '@/assets/images/icons/pencil.svg?raw'
 
@@ -261,12 +250,10 @@ const form = reactive({
 const errors = reactive({ name: '', category: '', email: '', phoneNumber: '', whatsApp: '' })
 const editing = ref(false)
 const saving = ref(false)
-const success = ref('')
 const error = ref('')
 
 const ownerWorksAsEmployee = computed(() => settingsStore.ownerAsEmployee)
 const toggling = ref(false)
-const toggleSuccess = ref('')
 const toggleError = ref('')
 
 const businessInitial = computed(() => {
@@ -299,14 +286,12 @@ watch(
 
 const startEdit = () => {
   fillForm()
-  success.value = ''
   error.value = ''
   editing.value = true
 }
 
 const cancelEdit = () => {
   editing.value = false
-  success.value = ''
   error.value = ''
   Object.keys(errors).forEach((k) => (errors[k] = ''))
 }
@@ -344,13 +329,9 @@ const validate = () => {
 const handleOwnerToggle = async (e) => {
   const enabled = e.target.checked
   toggling.value = true
-  toggleSuccess.value = ''
   toggleError.value = ''
   try {
     await settingsStore.toggleOwnerAsEmployee(enabled)
-    toggleSuccess.value = enabled
-      ? 'Activado: aparecerás como empleado de tu negocio'
-      : 'Desactivado: ya no aparecerás como empleado'
   } catch (err) {
     e.target.checked = !enabled
     toggleError.value = err.message || 'Error al actualizar la opción'
@@ -362,7 +343,6 @@ const handleOwnerToggle = async (e) => {
 const handleSubmit = async () => {
   if (!validate()) return
   saving.value = true
-  success.value = ''
   error.value = ''
   try {
     let logoUrl = form.logoUrl
@@ -387,7 +367,6 @@ const handleSubmit = async () => {
     settingsStore.businessData = { ...settingsStore.businessData, ...updated }
     form.logoUrl = updated.logoUrl ?? logoUrl
     editing.value = false
-    success.value = 'Negocio actualizado correctamente'
   } catch (e) {
     error.value = e.message || 'Error al actualizar el negocio'
   } finally {

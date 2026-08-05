@@ -36,7 +36,7 @@
       novalidate
       @submit.prevent="handleCreate"
     >
-      <div class="d-flex gap-2 align-items-start">
+      <div class="d-flex gap-2 align-items-start invite-row">
         <div class="flex-grow-1">
           <input
             v-model="inviteEmail"
