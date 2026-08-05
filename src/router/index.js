@@ -33,6 +33,14 @@ const authLayout = {
       meta: { requiresAuth: true },
     },
 
+    // Horarios
+    {
+      path: '/horarios',
+      name: 'Schedules',
+      component: () => import('@/views/schedules/SchedulesView.vue'),
+      meta: { requiresAuth: true },
+    },
+
     // Rutas de configuración: /settings
     ...settingsRoutes,
   ],
@@ -45,6 +53,13 @@ const routes = [
 
   // Rutas públicas: /negocio/:slug
   ...publicRoutes,
+
+  // Aceptación de invitación de empleado (accesible con y sin sesión)
+  {
+    path: '/invitacion/aceptar',
+    name: 'InvitationAccept',
+    component: () => import('@/views/invitation/InvitationAcceptView.vue'),
+  },
 
   // Onboarding (pantalla completa, sin sidebar)
   OnboardingBusiness,

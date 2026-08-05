@@ -89,6 +89,7 @@ import { useSettingsStore } from '@/stores/settings'
 import gearIcon from '@/assets/images/icons/gear.svg?raw'
 import homeIcon from '@/assets/images/icons/home.svg?raw'
 import wrenchIcon from '@/assets/images/icons/wrench.svg?raw'
+import clockIcon from '@/assets/images/icons/clock.svg?raw'
 import settingsIcon from '@/assets/images/icons/settings.svg?raw'
 import logOutIcon from '@/assets/images/icons/log-out.svg?raw'
 import sparklesIcon from '@/assets/images/icons/sparkles.svg?raw'
@@ -105,6 +106,7 @@ const userMenuOpen = ref(false)
 const navItems = [
   { name: 'Dashboard', label: 'Calendario', path: '/dashboard', icon: homeIcon },
   { name: 'Services', label: 'Servicios', path: '/servicios', icon: wrenchIcon },
+  { name: 'Schedules', label: 'Horarios', path: '/horarios', icon: clockIcon },
   { name: 'Settings', label: 'Configuración', path: '/settings', icon: settingsIcon },
 ]
 

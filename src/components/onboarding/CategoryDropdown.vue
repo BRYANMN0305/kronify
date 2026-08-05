@@ -10,7 +10,7 @@
         id="bizCategory"
         :value="modelValue"
         type="text"
-        class="category-input"
+        class="form-control category-input"
         placeholder="Ej: Barbería, Spa, Entrenador personal"
         @focus="open = true"
         @input="onInput"

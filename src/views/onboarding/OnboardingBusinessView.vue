@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column min-vh-100" style="background: var(--color-bg)">
+  <div class="onboarding-page d-flex flex-column min-vh-100" style="background: var(--color-bg); overflow-x: hidden;">
     <div class="p-3 p-md-4">
       <button class="btn btn-sm rounded-2 px-3 btn-back" @click="handleBack">
         ← Volver
@@ -29,6 +29,11 @@ function handleBack() {
 </script>
 
 <style scoped>
+.onboarding-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 .btn-back {
   --bs-btn-color: var(--color-text-muted);
   --bs-btn-border-color: var(--color-border);

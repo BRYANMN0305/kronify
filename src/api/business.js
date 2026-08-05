@@ -35,6 +35,19 @@ export const businessService = {
     })
   },
 
+  /** getOpeningHours — Horario de atención semanal del negocio (solo dueño) */
+  getOpeningHours() {
+    return request('/business/opening-hours', { method: 'GET' })
+  },
+
+  /** updateOpeningHours — Reemplaza el horario semanal del negocio (full-replace) */
+  updateOpeningHours(entries) {
+    return request('/business/opening-hours', {
+      method: 'PUT',
+      body: JSON.stringify(entries),
+    })
+  },
+
   /** toggleOwnerAsEmployee — Activa/desactiva el dueño como empleado */
   toggleOwnerAsEmployee(enabled) {
     return request('/business/employees/owner/toggle', {
