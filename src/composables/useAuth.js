@@ -16,6 +16,12 @@ import { useBusinessStore } from '@/stores/business'
 import { authService } from '@/api/auth'
 
 /**
+ * Mapa de proveedores del frontend a los registrationId del backend:
+ * microsoft → "azure" (id del registro OAuth2 configurado en application.yml)
+ */
+const OAUTH_REGISTRATION_IDS = { google: 'google', microsoft: 'azure' }
+
+/**
  * resumePendingInvitation — Si el usuario venía de un link de invitación,
  * redirige a la página de aceptación para procesar el token.
  * @returns {string|null} token guardado, si existe
@@ -30,13 +36,14 @@ const resumePendingInvitation = (router) => {
 
 /**
  * useAuth — Hook de autenticación
- * @returns {{ login, register, loginWithOAuth, loading, error }}
+ * @returns {{ login, register, loginWithOAuth, finalizeOAuthLogin, completeOAuthProfile, oauthRedirecting, loading, error }}
  */
 export const useAuth = () => {
   const router = useRouter()
   const store = useAuthStore()
-  const loading = ref(false)   // indica si hay una petición en curso
-  const error = ref(null)      // último error ocurrido
+  const loading = ref(false)        // indica si hay una petición en curso
+  const error = ref(null)          // último error ocurrido
+  const oauthRedirecting = ref(false) // indica si estamos redirigiendo al proveedor OAuth
 
   /**
    * login — Inicia sesión con email y contraseña
@@ -82,12 +89,45 @@ export const useAuth = () => {
   }
   /**
    * loginWithOAuth — Redirige al proveedor OAuth para autenticación
+   * El backend redirige de vuelta a /oauth/callback con el JWT propio.
    * @param {'google'|'microsoft'} proveedor
    */
   const loginWithOAuth = (proveedor) => {
+    const registrationId = OAUTH_REGISTRATION_IDS[proveedor] || proveedor
     const baseUrl = import.meta.env.VITE_API_URL || ''
-    window.location.href = `${baseUrl}/api/auth/${proveedor}`
+    oauthRedirecting.value = true
+    window.location.href = `${baseUrl}/oauth2/authorization/${registrationId}`
   }
 
-  return { login, register, loginWithOAuth, loading, error }
+  /**
+   * finalizeOAuthLogin — Aplica el token recibido en el callback OAuth:
+   * guarda la sesión y redirige al destino correspondiente.
+   * @param {string} token — JWT devuelto por el backend en el callback
+   */
+  const finalizeOAuthLogin = (token) => {
+    store.setAuth({ token })
+    if (!resumePendingInvitation(router)) router.replace('/calendario')
+  }
+
+  /**
+   * completeOAuthProfile — Guarda el tipo de perfil elegido en el
+   * primer login OAuth y aplica el token actualizado.
+   * @param {'CLIENT'|'BUSINESS'} profileType
+   */
+  const completeOAuthProfile = async (profileType) => {
+    const { accessToken } = await authService.setOAuthProfile(profileType)
+    store.setAuth({ token: accessToken })
+    if (!resumePendingInvitation(router)) router.replace('/calendario')
+  }
+
+  return {
+    login,
+    register,
+    loginWithOAuth,
+    finalizeOAuthLogin,
+    completeOAuthProfile,
+    oauthRedirecting,
+    loading,
+    error,
+  }
 }

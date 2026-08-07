@@ -26,4 +26,12 @@ export default [
     component: AuthView,
     meta: { layout: 'auth', guest: true },
   },
+  {
+    // El backend redirige aquí tras autenticar con Google/Microsoft:
+    // /oauth/callback?token=...&newProfile=true
+    path: '/oauth/callback',
+    name: 'OAuthCallback',
+    component: () => import('@/views/auth/OAuthCallbackView.vue'),
+    meta: { layout: 'auth' },
+  },
 ]
