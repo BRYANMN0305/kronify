@@ -12,6 +12,7 @@
     <!-- Botón: iniciar sesión con Google -->
     <button
         class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2"
+        :disabled="disabled"
         @click="$emit('oauth', 'google')"
     >
       <img :src="google" alt="Google" width="18" height="18"/>
@@ -21,6 +22,7 @@
     <!-- Botón: iniciar sesión con Microsoft -->
     <button
         class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2"
+        :disabled="disabled"
         @click="$emit('oauth', 'microsoft')"
     >
       <img :src="microsoft" alt="Microsoft" width="18" height="18"/>
@@ -37,10 +39,15 @@
  * Botones para autenticación mediante proveedores externos (OAuth).
  *
  * @component OAuthButtons
+ * @prop {boolean} disabled - Deshabilita ambos botones (p. ej. mientras se redirige)
  * @emits {string} oauth - Nombre del proveedor seleccionado ("google" | "microsoft")
  */
 import google from '@/assets/images/auth/google.svg'
 import microsoft from '@/assets/images/auth/microsoft.svg'
+
+defineProps({
+  disabled: { type: Boolean, default: false },
+})
 
 defineEmits(['oauth'])
 </script>
@@ -58,6 +65,13 @@ defineEmits(['oauth'])
     /* Brillo neon tenue en estado base */
     box-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.08);
     transition: all 0.2s;
+}
+
+/* --- Estado disabled: opacidad + cursor bloqueado --- */
+.btn-outline-light:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* --- Hover: borde neon + glow más visible --- */

@@ -51,7 +51,7 @@
 
     <div class="auth-divider my-2">o</div>
 
-    <OAuthButtons @oauth="loginWithOAuth" />
+    <OAuthButtons @oauth="loginWithOAuth" :disabled="oauthRedirecting" />
 
     <p class="auth-footer-text text-center mt-3 mb-0">
       ¿No tienes una cuenta?
@@ -72,7 +72,7 @@ import { useAuth } from '@/composables/useAuth'
 
 defineEmits(['switch'])
 
-const { login, loginWithOAuth, loading, error } = useAuth()
+const { login, loginWithOAuth, oauthRedirecting, loading, error } = useAuth()
 
 const form = reactive({ email: '', password: '' })
 const errors = reactive({ email: '', password: '' })

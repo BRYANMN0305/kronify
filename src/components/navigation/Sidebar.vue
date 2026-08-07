@@ -38,9 +38,9 @@
           <span class="sidebar-upgrade-icon" v-html="upgradeIcon"></span>
           <span class="sidebar-upgrade-title">Mejora tu plan</span>
         </div>
-        <p class="sidebar-upgrade-text">Desbloquea funciones avanzadas, reportes y herramientas que ahorran horas.</p>
+        <p class="sidebar-upgrade-text">¿Tu negocio va en serio? Kronify también. Sin límites de servicios, citas ni empleados.</p>
         <button type="button" class="btn btn-primary" @click="goToPlan">
-          Actualizar a Pro
+          Actualizar plan
         </button>
       </div>
 

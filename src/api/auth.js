@@ -25,4 +25,12 @@ export const authService = {
       body: JSON.stringify(payload),
     })
   },
+
+  /** setOAuthProfile — Asigna el tipo de perfil tras el primer login por OAuth */
+  setOAuthProfile(profileType) {
+    return request('/auth/oauth/profile', {
+      method: 'POST',
+      body: JSON.stringify({ profileType }),
+    })
+  },
 }
