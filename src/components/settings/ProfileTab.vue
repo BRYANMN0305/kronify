@@ -85,6 +85,17 @@
         <div class="settings-data-value">{{ settingsStore.businessData?.address || '—' }}</div>
       </div>
       <div>
+        <div class="settings-data-label">URL pública</div>
+        <a
+          v-if="publicUrl"
+          :href="publicUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="settings-data-link"
+        >{{ publicUrl }}</a>
+        <span v-else class="settings-data-value">—</span>
+      </div>
+      <div>
         <div class="settings-data-label">Fecha de creación</div>
         <div class="settings-data-value">{{ formatDate(settingsStore.businessData?.createdAt) }}</div>
       </div>
@@ -227,6 +238,7 @@
 import { reactive, ref, computed, watch } from 'vue'
 import dayjs from 'dayjs'
 import { useSettingsStore } from '@/stores/settings'
+import { useAuthStore } from '@/stores/auth'
 import { businessService } from '@/api/business'
 import CategoryDropdown from '@/components/onboarding/CategoryDropdown.vue'
 import LogoUpload from '@/components/onboarding/LogoUpload.vue'
@@ -235,6 +247,7 @@ import alertIcon from '@/assets/images/icons/alert-circle.svg?raw'
 import pencilIcon from '@/assets/images/icons/pencil.svg?raw'
 
 const settingsStore = useSettingsStore()
+const authStore = useAuthStore()
 
 const form = reactive({
   name: '',
@@ -262,6 +275,12 @@ const businessInitial = computed(() => {
 })
 
 const formatDate = (value) => (value ? dayjs(value).format('DD MMM YYYY') : '—')
+
+/** publicUrl — URL pública del negocio (slug viene en los claims del JWT) */
+const publicUrl = computed(() => {
+  const slug = authStore.user?.slug
+  return slug ? `${window.location.origin}/negocio/${slug}` : ''
+})
 
 const fillForm = () => {
   const b = settingsStore.businessData

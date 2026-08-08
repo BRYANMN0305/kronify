@@ -1,9 +1,10 @@
 <!-- ============================================================
      Sidebar.vue — Barra lateral fija de la app
      ============================================================
-     - Logo Workly (gear icon + texto) + avatar usuario
+     - Logo Kronify + avatar usuario
+     - Tarjeta del negocio (logo, nombre, categoría, link público)
      - Navegación: Home, Services, Settings
-     - Card "Mejora a Pro" (solo si está en plan free)
+     - Card "Mejora a Pro" (solo si está en plan free) con uso del plan
      - Tarjeta de usuario al pie con chevron → dropdown con cerrar sesión
      ============================================================ -->
 
@@ -11,7 +12,7 @@
   <aside class="app-sidebar">
     <div class="sidebar-header">
       <span class="sidebar-logo">
-        <span class="sidebar-logo-mark" v-html="gearIcon"></span>
+        <img class="sidebar-logo-mark" :src="kronifyLogo" alt="Kronify" />
         <span class="sidebar-logo-text">Kronify</span>
       </span>
     </div>
@@ -33,12 +34,47 @@
     </nav>
 
     <div class="sidebar-footer">
+      <div v-if="sidebarBusiness" class="sidebar-business">
+        <a
+          class="sidebar-business-card"
+          :href="publicUrl || undefined"
+          target="_blank"
+          rel="noopener noreferrer"
+          :title="publicUrl || 'Página pública no disponible'"
+        >
+          <span class="sidebar-business-avatar">
+            <img v-if="sidebarBusiness.logoUrl" :src="sidebarBusiness.logoUrl" alt="Logo del negocio" />
+            <template v-else>{{ businessInitial }}</template>
+          </span>
+          <span class="sidebar-business-info">
+            <span class="sidebar-business-name">{{ sidebarBusiness.name }}</span>
+            <span class="sidebar-business-category">{{ sidebarBusiness.category }}</span>
+          </span>
+          <span v-if="publicUrl" class="sidebar-business-external" v-html="externalIcon"></span>
+        </a>
+      </div>
+
       <div v-if="showUpgradeCard" class="sidebar-upgrade">
         <div class="sidebar-upgrade-head">
           <span class="sidebar-upgrade-icon" v-html="upgradeIcon"></span>
           <span class="sidebar-upgrade-title">Mejora tu plan</span>
         </div>
         <p class="sidebar-upgrade-text">¿Tu negocio va en serio? Kronify también. Sin límites de servicios, citas ni empleados.</p>
+        <div v-if="planUsage.length" class="sidebar-usage">
+          <div v-for="item in planUsage" :key="item.label" class="usage-row">
+            <div class="usage-row-head">
+              <span>{{ item.label }}</span>
+              <span>{{ item.text }}</span>
+            </div>
+            <div class="usage-bar">
+              <span
+                class="usage-bar-fill"
+                :class="item.cls"
+                :style="{ width: item.pct + '%' }"
+              ></span>
+            </div>
+          </div>
+        </div>
         <button type="button" class="btn btn-primary" @click="goToPlan">
           Actualizar plan
         </button>
@@ -87,7 +123,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { usePermissions } from '@/composables/usePermissions'
 
-import gearIcon from '@/assets/images/icons/gear.svg?raw'
+import kronifyLogo from '@/assets/images/icons/kronify_logo.png'
 import homeIcon from '@/assets/images/icons/home.svg?raw'
 import wrenchIcon from '@/assets/images/icons/wrench.svg?raw'
 import clockIcon from '@/assets/images/icons/clock.svg?raw'
@@ -96,6 +132,7 @@ import logOutIcon from '@/assets/images/icons/log-out.svg?raw'
 import sparklesIcon from '@/assets/images/icons/sparkles.svg?raw'
 import chevronUpIcon from '@/assets/images/icons/chevron-up.svg?raw'
 import upgradeIcon from '@/assets/images/icons/upgrade.svg?raw'
+import externalIcon from '@/assets/images/icons/external-link.svg?raw'
 
 const route = useRoute()
 const router = useRouter()
@@ -103,7 +140,7 @@ const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 const { isOwner, canManageServices, canManageSchedules } = usePermissions()
 
-const userMenuOpen = ref(false)
+const userMenuOpen = ref(true)
 
 /** navItems — Solo las secciones a las que el usuario tiene permiso */
 const navItems = computed(() => {
@@ -121,6 +158,50 @@ const navItems = computed(() => {
 })
 
 const isActive = (name) => route.name === name
+
+/** sidebarBusiness — Datos del negocio para la tarjeta (solo dueño con negocio) */
+const sidebarBusiness = computed(() => {
+  const b = settingsStore.businessData
+  if (!b?.name) return null
+  return {
+    name: b.name,
+    category: b.category || 'Negocio',
+    logoUrl: b.logoUrl || '',
+  }
+})
+
+const businessInitial = computed(() => {
+  const name = settingsStore.businessData?.name || ''
+  return name.trim()?.[0]?.toUpperCase() || 'N'
+})
+
+/** publicUrl — URL pública del negocio (slug viene en los claims del JWT) */
+const publicUrl = computed(() => {
+  const slug = authStore.user?.slug
+  return slug ? `${window.location.origin}/negocio/${slug}` : ''
+})
+
+/** planUsage — Barras de uso del plan para la card de upgrade */
+const planUsage = computed(() => {
+  const p = settingsStore.plan
+  if (!p?.plan) return []
+  const limits = p.plan || {}
+  const items = [
+    { label: 'Servicios', used: p.serviceCount, limit: limits.serviceLimit, reached: p.serviceLimitReached, exceeded: p.serviceLimitExceeded },
+    { label: 'Citas del mes', used: p.currentMonthAppointmentCount, limit: limits.monthlyAppointmentLimit, reached: p.appointmentLimitReached, exceeded: p.appointmentLimitExceeded },
+  ]
+  return items
+    .filter((it) => Number(it.limit) > 0)
+    .map((it) => {
+      const used = Number(it.used) || 0
+      const limit = Number(it.limit)
+      const pct = Math.min(100, Math.round((used / limit) * 100))
+      let cls = 'usage-fill-normal'
+      if (it.exceeded || it.reached || pct >= 100) cls = 'usage-fill-danger'
+      else if (pct >= 75) cls = 'usage-fill-warning'
+      return { label: it.label, text: `${used}/${limit}`, pct, cls }
+    })
+})
 
 const navigate = (item) => {
   if (route.name !== item.name) router.push(item.path)
