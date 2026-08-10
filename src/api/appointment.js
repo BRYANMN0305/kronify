@@ -15,4 +15,20 @@ export const appointmentService = {
       body: JSON.stringify(payload),
     })
   },
+
+  /** getAutofill - Datos del cliente autenticado para reservar */
+  getAutofill() {
+    return request('/appointments/autofill', { method: 'GET' })
+  },
+
+  /** getHistory - Historial de citas del cliente autenticado */
+  getHistory({ page = 0, size = 10, sort = 'startAt,desc' } = {}) {
+    const params = new URLSearchParams({ page, size, sort })
+    return request(`/appointments/history?${params.toString()}`, { method: 'GET' })
+  },
+
+  /** cancel - Cancela una cita propia del cliente */
+  cancel(appointmentId) {
+    return request(`/appointments/cancel/${appointmentId}`, { method: 'POST' })
+  },
 }

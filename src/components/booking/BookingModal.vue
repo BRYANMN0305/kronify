@@ -147,7 +147,7 @@ const stepTitle = computed(() => {
 
 watch(
   () => props.modelValue,
-  (open) => {
+  async (open) => {
     if (!open) return
     selectedService.value = props.initialService || null
     selectedEmployeeId.value = null
@@ -157,8 +157,24 @@ watch(
     submitError.value = null
     form.value = { customerName: '', customerLastName: '', customerPhone: '', customerEmail: '' }
     step.value = selectedService.value ? 2 : 1
+    await loadAutofill()
   }
 )
+
+async function loadAutofill() {
+  if (!localStorage.getItem('token')) return
+  try {
+    const data = await appointmentService.getAutofill()
+    form.value = {
+      customerName: data.name || '',
+      customerLastName: data.lastName || '',
+      customerPhone: data.phoneNumber || '',
+      customerEmail: data.email || '',
+    }
+  } catch {
+    // Solo los clientes autenticados tienen datos de autocompletado.
+  }
+}
 
 function selectService(service) {
   selectedService.value = service
@@ -206,6 +222,10 @@ function close() {
 }
 
 async function submit() {
+  if (!form.value.customerName || !form.value.customerPhone || !form.value.customerEmail) {
+    submitError.value = 'Completa nombre, telefono y email para confirmar.'
+    return
+  }
   submitting.value = true
   submitError.value = null
   try {

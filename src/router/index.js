@@ -27,7 +27,21 @@ const authLayout = {
     {
       path: '/calendario',
       name: 'Calendario',
-      component: () => import('@/views/dashboard/DashboardView.vue'),
+      component: () => import('@/views/dashboard/AgendaView.vue'),
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/mis-citas',
+      name: 'MisCitas',
+      component: () => import('@/views/client/MyAppointmentsView.vue'),
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/resenas',
+      name: 'Resenas',
+      component: () => import('@/views/dashboard/ReviewsView.vue'),
       meta: { requiresAuth: true },
     },
 

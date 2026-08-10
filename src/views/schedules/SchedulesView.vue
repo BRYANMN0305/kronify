@@ -23,9 +23,20 @@
     </header>
 
     <div v-if="initError" class="schedules-error-block">
-      <div class="settings-alert settings-alert-error">
-        <span v-html="alertIcon"></span>
-        <span>{{ initError }}</span>
+      <div class="schedules-access-card">
+        <span class="schedules-access-icon" v-html="alertIcon"></span>
+        <div>
+          <h2>No pudimos abrir tus horarios</h2>
+          <p>{{ friendlyInitError }}</p>
+          <div class="schedules-access-actions">
+            <button type="button" class="btn btn-primary btn-sm" @click="router.push('/calendario')">
+              Ir al calendario
+            </button>
+            <button type="button" class="btn btn-outline-light btn-sm" @click="router.push('/configuracion')">
+              Revisar mi perfil
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -58,7 +69,7 @@
         <main class="schedules-detail">
           <div v-if="error" class="settings-alert settings-alert-error">
             <span v-html="alertIcon"></span>
-            <span>{{ error }}</span>
+            <span>{{ friendlyError }}</span>
           </div>
 
           <section class="settings-section">
@@ -197,7 +208,7 @@
           <template v-else>
             <div v-if="error" class="settings-alert settings-alert-error">
               <span v-html="alertIcon"></span>
-              <span>{{ error }}</span>
+              <span>{{ friendlyError }}</span>
             </div>
 
             <!-- Sub-tab: Horario semanal -->
@@ -385,6 +396,18 @@ const myEmployee = ref(null)
 const loadingDetail = ref(false)
 const activeTab = ref('weekly')
 const error = ref('')
+
+const friendlyInitError = computed(() => {
+  if (initError.value.includes('403')) {
+    return 'Tu usuario no tiene permisos para gestionar horarios. Debes entrar como dueño del negocio o como empleado con autogestión habilitada.'
+  }
+  return initError.value
+})
+
+const friendlyError = computed(() => {
+  if (error.value.includes('403')) return 'No tienes permiso para realizar esta acción con la sesión actual.'
+  return error.value
+})
 
 /** Sección del dueño: horario fijo del negocio vs empleados */
 const ownerSection = ref('employees') // 'business' | 'employees'
