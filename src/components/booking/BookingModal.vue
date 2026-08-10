@@ -127,6 +127,8 @@ const form = ref({
 })
 
 const today = dayjs().format('YYYY-MM-DD')
+const currentUser = computed(() => JSON.parse(localStorage.getItem('user') || 'null'))
+const isClientSession = computed(() => currentUser.value?.profileType === 'CLIENT')
 
 const employeesForService = computed(() => {
   if (!selectedService.value) return []
@@ -162,7 +164,7 @@ watch(
 )
 
 async function loadAutofill() {
-  if (!localStorage.getItem('token')) return
+  if (!localStorage.getItem('token') || !isClientSession.value) return
   try {
     const data = await appointmentService.getAutofill()
     form.value = {
@@ -239,7 +241,7 @@ async function submit() {
       customerPhone: form.value.customerPhone,
       customerEmail: form.value.customerEmail,
     }
-    await appointmentService.create(payload)
+    await appointmentService.create(payload, { skipAuth: !isClientSession.value })
     step.value = 5
     emit('booked')
   } catch (err) {
