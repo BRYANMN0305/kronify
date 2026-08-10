@@ -27,17 +27,18 @@ const handleUnauthorized = () => {
 export const request = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token')
   const isFormData = options.body instanceof FormData
+  const { skipAuth, ...fetchOptions } = options
   const headers = {
-    ...options.headers,
+    ...fetchOptions.headers,
   }
   if (!isFormData) {
     headers['Content-Type'] = 'application/json'
   }
-  if (token) {
+  if (token && !skipAuth) {
     headers['Authorization'] = `Bearer ${token}`
   }
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers })
+  const res = await fetch(`${BASE_URL}${endpoint}`, { ...fetchOptions, headers })
 
   // Token inválido o expirado: cerrar sesión y volver al login
   // (solo si ya había sesión; un 401 del propio login es credenciales incorrectas)
