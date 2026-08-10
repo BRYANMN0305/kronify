@@ -2,8 +2,10 @@
   <div v-if="modelValue" class="booking-overlay" @click.self="close">
     <div class="booking-modal">
       <div class="booking-header">
-        <button v-if="step > 1 && step < 4" class="btn-icon" @click="back">←</button>
-        <h2 class="booking-title">{{ stepTitle }}</h2>
+        <button v-if="step > 1 && step < 5" class="btn-icon" @click="back">←</button>
+        <div class="header-text">
+          <h2 class="booking-title">{{ stepTitle }}</h2>
+        </div>
         <button class="btn-icon" @click="close">×</button>
       </div>
 
@@ -40,54 +42,128 @@
         </div>
 
         <!-- Paso 3: Fecha y horarios -->
-        <div v-else-if="step === 3" class="step-date">
-          <input type="date" v-model="selectedDate" :min="today" class="form-control" @change="loadAvailability" />
+        <div v-else-if="step === 3" class="step-datetime">
+          <div class="datetime-layout">
+            <!-- Calendario -->
+            <div class="calendar-panel">
+              <div class="calendar-header">
+                <button class="calendar-nav" @click="prevMonth">‹</button>
+                <span class="calendar-title">{{ monthName }} {{ calendarYear }}</span>
+                <button class="calendar-nav" @click="nextMonth">›</button>
+              </div>
+              <div class="calendar-grid">
+                <div v-for="d in weekDays" :key="d" class="calendar-weekday">{{ d }}</div>
+                <div
+                  v-for="(day, idx) in calendarDays"
+                  :key="idx"
+                  class="calendar-day"
+                  :class="{
+                    'calendar-day--empty': !day.date,
+                    'calendar-day--past': day.past,
+                    'calendar-day--selected': day.selected,
+                    'calendar-day--today': day.isToday,
+                  }"
+                  @click="day.date && !day.past && selectDate(day)"
+                >
+                  {{ day.date || '' }}
+                </div>
+              </div>
+            </div>
 
-          <div v-if="loadingSlots" class="empty-message">Cargando horarios...</div>
-          <div v-else-if="slots.length === 0" class="empty-message">No hay horarios disponibles ese día.</div>
-          <div v-else class="slots-grid">
-            <button
-              v-for="(slot, idx) in slots"
-              :key="idx"
-              class="slot-btn"
-              @click="selectSlot(slot)"
-            >
-              {{ formatTime(slot.startAt) }}
-              <span v-if="!selectedEmployeeId" class="slot-employee">{{ slot.employeeName }}</span>
-            </button>
+            <!-- Horarios -->
+            <div class="slots-panel">
+              <div v-if="loadingSlots" class="empty-message">Cargando horarios...</div>
+              <div v-else-if="availabilityError" class="empty-message">{{ availabilityError }}</div>
+              <div v-else-if="!dateSelected" class="empty-message">Selecciona un día</div>
+              <div v-else-if="slots.length === 0" class="empty-message">Sin horarios</div>
+              <div v-else class="slots-list">
+                <button
+                  v-for="(slot, idx) in visibleSlots"
+                  :key="idx"
+                  class="slot-btn"
+                  :class="{ 'slot-btn--selected': selectedSlot?.startAt === slot.startAt }"
+                  @click="selectSlot(slot)"
+                >
+                  {{ formatTime(slot.startAt) }}
+                  <span v-if="!selectedEmployeeId" class="slot-employee">
+                    <template v-if="slot.multiple">{{ slot.count }} profesionales</template>
+                    <template v-else>{{ slot.employeeName }}</template>
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Paso 4: Datos del cliente -->
         <div v-else-if="step === 4" class="step-form">
-          <div class="summary-box">
-            <div>{{ selectedService.name }}</div>
-            <div class="summary-meta">{{ formatDate(selectedSlot.startAt) }} · {{ selectedSlot.employeeName }}</div>
-          </div>
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <div>
+                <h3 class="settings-section-title">Resumen de tu cita</h3>
+              </div>
+            </div>
+            <div class="booking-summary">
+              <div>
+                <div class="settings-data-label">Cita</div>
+                <div class="settings-data-value">{{ selectedService.name }}</div>
+              </div>
+              <div>
+                <div class="settings-data-label">Hora</div>
+                <div class="settings-data-value">{{ formatDate(selectedSlot.startAt) }}</div>
+              </div>
+              <div>
+                <div class="settings-data-label">Profesional</div>
+                <div class="settings-data-value booking-employee">{{ selectedSlot.employeeName }}</div>
+              </div>
+            </div>
+          </section>
 
-          <label class="field-label">Nombre</label>
-          <input v-model="form.customerName" class="form-control" placeholder="Tu nombre" />
+          <form class="settings-section settings-form" novalidate @submit.prevent="submit">
+            <div class="settings-section-header">
+              <div>
+                <h3 class="settings-section-title">Tus datos</h3>
+                <p class="settings-section-subtitle">¿Cómo te contactamos?</p>
+              </div>
+            </div>
 
-          <label class="field-label">Apellido</label>
-          <input v-model="form.customerLastName" class="form-control" placeholder="Tu apellido" />
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre <span class="required-mark">*</span></label>
+                <input v-model="form.customerName" class="form-control" placeholder="Tu nombre" />
+              </div>
 
-          <label class="field-label">Teléfono</label>
-          <input v-model="form.customerPhone" class="form-control" placeholder="Tu teléfono" />
+              <div class="col-md-6">
+                <label class="form-label">Apellido</label>
+                <input v-model="form.customerLastName" class="form-control" placeholder="Tu apellido" />
+              </div>
 
-          <label class="field-label">Email</label>
-          <input v-model="form.customerEmail" type="email" class="form-control" placeholder="Tu email" />
+              <div class="col-md-6">
+                <label class="form-label">Teléfono <span class="required-mark">*</span></label>
+                <input v-model="form.customerPhone" class="form-control" placeholder="Tu teléfono" />
+              </div>
 
-          <p v-if="submitError" class="error-message">{{ submitError }}</p>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input v-model="form.customerEmail" type="email" class="form-control" placeholder="Tu email" />
+              </div>
+            </div>
 
-          <button class="btn-confirm" :disabled="submitting" @click="submit">
-            {{ submitting ? 'Reservando...' : 'Confirmar reserva' }}
-          </button>
+            <div v-if="submitError" class="settings-alert settings-alert-error">{{ submitError }}</div>
+
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary" :disabled="submitting">
+                <span v-if="submitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ submitting ? 'Confirmando...' : 'Confirmar cita' }}
+              </button>
+            </div>
+          </form>
         </div>
 
         <!-- Paso 5: Confirmación -->
         <div v-else class="step-confirm">
           <div class="confirm-icon">✓</div>
-          <p class="confirm-title">¡Reserva confirmada!</p>
+          <p class="confirm-title">¡Cita confirmada!</p>
           <p class="confirm-text">Te esperamos el {{ formatDate(selectedSlot.startAt) }}.</p>
           <button class="btn-confirm" @click="close">Listo</button>
         </div>
@@ -102,6 +178,8 @@ import dayjs from 'dayjs'
 import { publicBusinessService } from '@/api/publicBusiness'
 import { appointmentService } from '@/api/appointment'
 
+const CO = -300
+
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
   business: { type: Object, required: true },
@@ -112,9 +190,10 @@ const emit = defineEmits(['update:modelValue', 'booked'])
 const step = ref(1)
 const selectedService = ref(null)
 const selectedEmployeeId = ref(null)
-const selectedDate = ref(dayjs().format('YYYY-MM-DD'))
+const selectedDate = ref(dayjs().utcOffset(CO).format('YYYY-MM-DD'))
 const slots = ref([])
 const loadingSlots = ref(false)
+const availabilityError = ref(null)
 const selectedSlot = ref(null)
 const submitting = ref(false)
 const submitError = ref(null)
@@ -126,13 +205,26 @@ const form = ref({
   customerEmail: '',
 })
 
-const today = dayjs().format('YYYY-MM-DD')
+const today = dayjs().utcOffset(CO).format('YYYY-MM-DD')
+
+const nowCO = () => dayjs().utcOffset(CO)
 
 const employeesForService = computed(() => {
   if (!selectedService.value) return []
   return (props.business.employees || []).filter((emp) =>
     emp.serviceIds.includes(selectedService.value.serviceId)
   )
+})
+
+const selectedEmployeeName = computed(() => {
+  if (!selectedEmployeeId.value) return 'Cualquiera disponible'
+  const emp = (props.business.employees || []).find(e => e.employeeId === selectedEmployeeId.value)
+  return emp?.name || ''
+})
+
+const headerEmployeeName = computed(() => {
+  if (selectedSlot.value) return selectedSlot.value.employeeName
+  return selectedEmployeeName.value
 })
 
 const stepTitle = computed(() => {
@@ -145,15 +237,100 @@ const stepTitle = computed(() => {
   }
 })
 
+const calendarMonth = ref(nowCO().month())
+const calendarYear = ref(nowCO().year())
+
+const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
+
+const monthName = computed(() => {
+  return nowCO().month(calendarMonth.value).year(calendarYear.value).format('MMMM')
+})
+
+const calendarDays = computed(() => {
+  const first = dayjs().year(calendarYear.value).month(calendarMonth.value).date(1)
+  const startOffset = first.day()
+  const daysInMonth = first.daysInMonth()
+  const todayStr = nowCO().format('YYYY-MM-DD')
+  const days = []
+  for (let i = 0; i < startOffset; i++) days.push({ date: null })
+  for (let d = 1; d <= daysInMonth; d++) {
+    const raw = dayjs().year(calendarYear.value).month(calendarMonth.value).date(d)
+    const dateStr = raw.format('YYYY-MM-DD')
+    days.push({
+      date: d,
+      raw,
+      dateStr,
+      past: raw.isBefore(nowCO(), 'day'),
+      selected: dateStr === selectedDate.value,
+      isToday: dateStr === todayStr,
+    })
+  }
+  return days
+})
+
+const dateSelected = computed(() => !!selectedDate.value)
+
+const visibleSlots = computed(() => {
+  if (selectedEmployeeId.value) return slots.value
+  const groups = new Map()
+  for (const slot of slots.value) {
+    const g = groups.get(slot.startAt) || {
+      startAt: slot.startAt,
+      employeeIds: [],
+      employeeNames: [],
+      count: 0,
+    }
+    g.employeeIds.push(slot.employeeId)
+    g.employeeNames.push(slot.employeeName)
+    g.count++
+    groups.set(slot.startAt, g)
+  }
+  return Array.from(groups.values()).map((g) => ({
+    startAt: g.startAt,
+    count: g.count,
+    multiple: g.count > 1,
+    employeeId: g.employeeIds[0],
+    employeeName: g.employeeNames[0],
+    employeeIds: g.employeeIds,
+    employeeNames: g.employeeNames,
+  }))
+})
+
+function prevMonth() {
+  if (calendarMonth.value === 0) {
+    calendarMonth.value = 11
+    calendarYear.value--
+  } else {
+    calendarMonth.value--
+  }
+}
+
+function nextMonth() {
+  if (calendarMonth.value === 11) {
+    calendarMonth.value = 0
+    calendarYear.value++
+  } else {
+    calendarMonth.value++
+  }
+}
+
+function selectDate(day) {
+  selectedDate.value = day.dateStr
+  loadAvailability()
+}
+
 watch(
   () => props.modelValue,
   (open) => {
     if (!open) return
     selectedService.value = props.initialService || null
     selectedEmployeeId.value = null
-    selectedDate.value = dayjs().format('YYYY-MM-DD')
+    selectedDate.value = nowCO().format('YYYY-MM-DD')
+    calendarMonth.value = nowCO().month()
+    calendarYear.value = nowCO().year()
     slots.value = []
     selectedSlot.value = null
+    availabilityError.value = null
     submitError.value = null
     form.value = { customerName: '', customerLastName: '', customerPhone: '', customerEmail: '' }
     step.value = selectedService.value ? 2 : 1
@@ -175,6 +352,7 @@ async function loadAvailability() {
   if (!selectedService.value || !selectedDate.value) return
   loadingSlots.value = true
   selectedSlot.value = null
+  availabilityError.value = null
   try {
     const res = await publicBusinessService.getAvailability(
       props.business.slug,
@@ -185,13 +363,23 @@ async function loadAvailability() {
     slots.value = res.slots || []
   } catch (err) {
     slots.value = []
+    availabilityError.value = err?.message || 'No se pudieron cargar los horarios. Intenta de nuevo.'
   } finally {
     loadingSlots.value = false
   }
 }
 
 function selectSlot(slot) {
-  selectedSlot.value = slot
+  if (slot.multiple) {
+    const idx = Math.floor(Math.random() * slot.employeeIds.length)
+    selectedSlot.value = {
+      startAt: slot.startAt,
+      employeeId: slot.employeeIds[idx],
+      employeeName: slot.employeeNames[idx],
+    }
+  } else {
+    selectedSlot.value = slot
+  }
   step.value = 4
 }
 
@@ -223,17 +411,17 @@ async function submit() {
     step.value = 5
     emit('booked')
   } catch (err) {
-    submitError.value = err?.message || 'No se pudo completar la reserva. Intenta de nuevo.'
+    submitError.value = err?.message || 'No se pudo completar la cita. Intenta de nuevo.'
   } finally {
     submitting.value = false
   }
 }
 
 function formatTime(dateStr) {
-  return dayjs(dateStr).format('h:mm A')
+  return dayjs(dateStr).utcOffset(CO).format('h:mm A')
 }
 function formatDate(dateStr) {
-  return dayjs(dateStr).format('DD MMM YYYY, h:mm A')
+  return dayjs(dateStr).utcOffset(CO).format('DD MMM YYYY, h:mm A')
 }
 </script>
 
@@ -244,7 +432,7 @@ function formatDate(dateStr) {
 }
 .booking-modal {
   background: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: 16px; width: 100%; max-width: 420px; max-height: 85vh;
+  border-radius: 16px; width: 100%; max-width: 660px; max-height: 85vh;
   display: flex; flex-direction: column; overflow: hidden;
 }
 .booking-header {
@@ -252,8 +440,10 @@ function formatDate(dateStr) {
   padding: 16px 18px; border-bottom: 1px solid var(--color-border);
 }
 .booking-title { color: var(--color-text); font-size: 1rem; font-weight: 600; margin: 0; }
+.header-text { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.header-employee { color: var(--neon); font-size: 0.82rem; font-weight: 500; }
 .btn-icon { background: none; border: none; color: var(--color-text-muted); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
-.booking-body { padding: 16px 18px; overflow-y: auto; }
+.booking-body { padding: 16px 18px; overflow: hidden; flex: 1; min-height: 0; }
 
 .step-list { display: flex; flex-direction: column; gap: 8px; }
 .option-row {
@@ -266,23 +456,77 @@ function formatDate(dateStr) {
 .option-meta { color: var(--color-text-muted); font-size: 0.78rem; margin-top: 2px; }
 .option-price { color: var(--neon); font-weight: 600; font-size: 0.9rem; }
 
-.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-@media (max-width: 420px) {
-  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+.step-datetime { padding: 0; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.datetime-layout {
+  display: flex; gap: 0; flex: 1; min-height: 0;
+}
+.calendar-panel { flex: 1; min-width: 0; padding-right: 16px; border-right: 1px solid var(--color-border); display: flex; flex-direction: column; }
+.calendar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendar-nav {
+  background: none; border: none; color: var(--color-text-muted);
+  font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+}
+.calendar-nav:hover { color: var(--color-text); background: var(--color-surface-alt); }
+.calendar-title { color: var(--color-text); font-size: 0.9rem; font-weight: 600; text-transform: capitalize; }
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+}
+.calendar-weekday {
+  text-align: center; font-size: 0.75rem; font-weight: 600;
+  color: var(--color-text-muted); padding: 6px 0; text-transform: capitalize;
+}
+.calendar-day {
+  text-align: center; font-size: 0.8rem; color: var(--color-text);
+  width: 60px; height: 60px; border-radius: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.calendar-day:hover:not(.calendar-day--empty):not(.calendar-day--past) {
+  background: var(--color-surface-alt);
+}
+.calendar-day--empty { cursor: default; }
+.calendar-day--past { color: var(--color-text-muted); opacity: 0.3; cursor: not-allowed; }
+.calendar-day--selected {
+  background: var(--color-text); color: var(--color-bg); font-weight: 600;
+}
+.calendar-day--today:not(.calendar-day--selected) {
+  border: 1px solid var(--neon); color: var(--neon);
+}
+
+.slots-panel {
+  width: 140px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding-left: 16px;
+  overflow-y: auto;
+  max-height: 440px;
+  scrollbar-width: none;
+}
+.slots-panel::-webkit-scrollbar { display: none; }
+.slots-list {
+  display: flex; flex-direction: column; gap: 6px;
 }
 .slot-btn {
-  background: var(--color-surface-alt); border: 1px solid var(--color-border); color: var(--color-text);
-  border-radius: 8px; padding: 10px 6px; font-size: 0.82rem; cursor: pointer; text-align: center;
+  background: var(--color-surface-alt); border: none;
+  color: var(--color-text); border-radius: 10px; padding: 12px 8px;
+  font-size: 0.85rem; font-weight: 500; cursor: pointer; text-align: center; width: 100%;
 }
-.slot-btn:hover { border-color: var(--neon); color: var(--neon); }
+.slot-btn:hover { color: var(--neon); }
+.slot-btn--selected { background: var(--neon); color: var(--color-bg); }
 .slot-employee { display: block; color: var(--color-text-muted); font-size: 0.72rem; margin-top: 2px; }
-.empty-message { color: var(--color-text-muted); font-size: 0.85rem; text-align: center; padding: 24px 0; }
+.empty-message { color: var(--color-text-muted); font-size: 0.82rem; text-align: center; padding: 24px 0; }
 
+.step-form { display: flex; flex-direction: column; gap: 16px; }
+.booking-employee { color: var(--neon); font-weight: 600; }
+.booking-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; justify-items: center; text-align: center; }
 .summary-box {
   background: var(--color-surface-alt); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; color: var(--color-text);
 }
-.summary-meta { color: var(--neon); font-size: 0.82rem; margin-top: 2px; }
+.summary-meta { color: var(--color-text-muted); font-size: 0.82rem; margin-top: 2px; }
+.summary-employee { color: var(--neon); font-size: 0.9rem; font-weight: 600; margin-top: 6px; }
 .field-label { display: block; color: var(--color-text-label); font-size: 0.8rem; margin: 10px 0 4px; }
+.required-mark { color: var(--color-error); font-weight: 700; }
 .error-message { color: var(--color-error); font-size: 0.82rem; margin-top: 10px; }
 .btn-confirm {
   width: 100%; background: var(--neon); color: var(--color-bg); border: none; font-weight: 600;
@@ -297,4 +541,10 @@ function formatDate(dateStr) {
 }
 .confirm-title { color: var(--color-text); font-weight: 600; font-size: 1.05rem; margin: 0 0 6px; }
 .confirm-text { color: var(--color-text-muted); font-size: 0.88rem; margin: 0 0 20px; }
+
+@media (max-width: 420px) {
+  .datetime-layout { flex-direction: column; min-height: auto; }
+  .calendar-panel { border-right: none; border-bottom: 1px solid var(--color-border); padding-right: 0; padding-bottom: 16px; }
+  .slots-panel { width: 100%; padding-left: 0; padding-top: 12px; }
+}
 </style>

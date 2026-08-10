@@ -11,6 +11,11 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+// Dayjs plugins (globales)
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
+
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
