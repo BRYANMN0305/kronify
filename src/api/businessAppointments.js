@@ -8,6 +8,14 @@
 import { request } from './http'
 
 export const businessAppointmentService = {
+  /** create - Crea una cita desde el panel del negocio */
+  create(payload) {
+    return request('/business/appointments/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
   /** list - Lista paginada de citas del negocio */
   list({ page = 0, size = 20, sort = 'startAt,desc' } = {}) {
     const params = new URLSearchParams({ page, size, sort })
