@@ -29,6 +29,12 @@
         <button class="btn-primary" :disabled="saving || newStatus === appointment.status" @click="saveStatus">
           {{ saving ? 'Guardando...' : 'Actualizar estado' }}
         </button>
+
+        <label class="field-label">Reprogramar</label>
+        <input v-model="newStartAt" class="field-select" type="datetime-local" />
+        <button class="btn-secondary" :disabled="rescheduling || !newStartAt" @click="saveReschedule">
+          {{ rescheduling ? 'Reprogramando...' : 'Reprogramar cita' }}
+        </button>
       </div>
     </div>
   </div>
@@ -45,7 +51,9 @@ const props = defineProps({
 const emit = defineEmits(['close', 'updated'])
 
 const newStatus = ref(props.appointment.status)
+const newStartAt = ref(dayjs(props.appointment.startAt).format('YYYY-MM-DDTHH:mm'))
 const saving = ref(false)
+const rescheduling = ref(false)
 const error = ref('')
 
 function formatDate(dateStr) {
@@ -70,6 +78,22 @@ async function saveStatus() {
     saving.value = false
   }
 }
+
+async function saveReschedule() {
+  rescheduling.value = true
+  error.value = ''
+  try {
+    const updated = await businessAppointmentService.reschedule(props.appointment.appointmentId, {
+      startAt: newStartAt.value,
+    })
+    emit('updated', updated)
+    emit('close')
+  } catch (err) {
+    error.value = err.message || 'No se pudo reprogramar la cita.'
+  } finally {
+    rescheduling.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -91,5 +115,11 @@ async function saveStatus() {
   width: 100%; background: var(--neon); color: var(--color-bg); border: none; font-weight: 600;
   padding: 12px; border-radius: 10px; margin-top: 16px; cursor: pointer; font-size: 0.9rem;
 }
+.btn-secondary {
+  width: 100%; background: transparent; color: var(--color-text-label); border: 1px solid var(--color-border); font-weight: 600;
+  padding: 12px; border-radius: 10px; margin-top: 10px; cursor: pointer; font-size: 0.9rem;
+}
+.btn-secondary:hover { border-color: var(--neon); color: var(--neon); }
+.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
