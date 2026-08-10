@@ -128,6 +128,7 @@ import homeIcon from '@/assets/images/icons/home.svg?raw'
 import wrenchIcon from '@/assets/images/icons/wrench.svg?raw'
 import clockIcon from '@/assets/images/icons/clock.svg?raw'
 import settingsIcon from '@/assets/images/icons/settings.svg?raw'
+import usersIcon from '@/assets/images/icons/users.svg?raw'
 import logOutIcon from '@/assets/images/icons/log-out.svg?raw'
 import sparklesIcon from '@/assets/images/icons/sparkles.svg?raw'
 import chevronUpIcon from '@/assets/images/icons/chevron-up.svg?raw'
@@ -152,6 +153,10 @@ const navItems = computed(() => {
   }
   if (canManageServices.value) {
     items.push({ name: 'Servicios', label: 'Servicios', path: '/servicios', icon: wrenchIcon })
+    items.push({ name: 'Resenas', label: 'Reseñas', path: '/resenas', icon: usersIcon })
+  }
+  if (!authStore.isBusiness) {
+    items.push({ name: 'MisCitas', label: 'Mis citas', path: '/mis-citas', icon: clockIcon })
   }
   items.push({ name: 'Configuracion', label: 'Configuración', path: '/configuracion', icon: settingsIcon })
   return items

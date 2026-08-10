@@ -29,7 +29,7 @@
         <p v-if="!business.employees?.length" class="empty-message">Aún no hay empleados registrados.</p>
       </div>
 
-      <div v-else class="empty-message">Las reseñas estarán disponibles próximamente.</div>
+      <ReviewList v-else :reviews="reviews" />
     </div>
 
     <BookingModal
@@ -48,6 +48,7 @@ import { useRoute } from 'vue-router'
 import { publicBusinessService } from '@/api/publicBusiness'
 import BusinessHeader from '@/components/public/BusinessHeader.vue'
 import ServiceCard from '@/components/public/ServiceCard.vue'
+import ReviewList from '@/components/public/ReviewList.vue'
 import BookingModal from '@/components/booking/BookingModal.vue'
 
 const route = useRoute()
@@ -56,6 +57,7 @@ const loading = ref(true)
 const activeTab = ref('servicios')
 const bookingOpen = ref(false)
 const bookingService = ref(null)
+const reviews = ref([])
 
 const tabs = [
   { key: 'servicios', label: 'Servicios' },
@@ -71,6 +73,7 @@ function openBooking(service) {
 onMounted(async () => {
   try {
     business.value = await publicBusinessService.getBySlug(route.params.slug)
+    reviews.value = await publicBusinessService.listReviews(route.params.slug).catch(() => [])
   } catch (err) {
     business.value = null
   } finally {

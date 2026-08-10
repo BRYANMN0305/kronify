@@ -8,6 +8,12 @@
 import { request } from './http'
 
 export const businessAppointmentService = {
+  /** list - Lista paginada de citas del negocio */
+  list({ page = 0, size = 20, sort = 'startAt,desc' } = {}) {
+    const params = new URLSearchParams({ page, size, sort })
+    return request(`/business/appointments/?${params.toString()}`, { method: 'GET' })
+  },
+
   /** getAgenda — Citas en un rango de fechas, con filtros opcionales */
   getAgenda({ startDate, endDate, employeeId, serviceId, status, origin }) {
     const params = new URLSearchParams({ startDate, endDate })
