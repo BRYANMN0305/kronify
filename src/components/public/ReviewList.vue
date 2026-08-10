@@ -1,7 +1,7 @@
 <template>
   <div class="review-list">
     <ReviewCard v-for="review in reviews" :key="review.reviewId" :review="review" />
-    <p v-if="!reviews.length" class="empty-message">Aun no hay resenas publicas.</p>
+    <p v-if="!reviews.length" class="empty-message">Aun no hay reseñas publicas.</p>
   </div>
 </template>
 

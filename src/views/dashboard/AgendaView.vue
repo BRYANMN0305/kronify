@@ -7,7 +7,10 @@
           <h1>Agenda</h1>
           <p>Consulta, filtra y gestiona las citas del negocio.</p>
         </div>
-        <button class="refresh-button" @click="agenda.fetchAgenda()">Actualizar</button>
+        <div class="header-actions">
+          <button class="refresh-button" @click="showCreate = true">Nueva cita</button>
+          <button class="refresh-button" @click="agenda.fetchAgenda()">Actualizar</button>
+        </div>
       </header>
 
       <section class="summary-grid" aria-label="Resumen de agenda">
@@ -53,6 +56,14 @@
       @close="selected = null"
       @updated="handleUpdated"
     />
+    <AppointmentCreateModal
+      v-if="showCreate"
+      :business-id="businessId"
+      :services="servicesStore.services"
+      :employees="employees"
+      @close="showCreate = false"
+      @created="handleCreated"
+    />
   </div>
 </template>
 
@@ -61,15 +72,20 @@ import { ref, onMounted } from 'vue'
 import { computed } from 'vue'
 import { useAgendaStore } from '@/stores/agenda'
 import { useServicesStore } from '@/stores/services'
+import { useBusinessStore } from '@/stores/business'
 import { employeeService } from '@/api/employee'
 import AgendaFilters from '@/components/agenda/AgendaFilters.vue'
 import AgendaCalendar from '@/components/agenda/AgendaCalendar.vue'
 import AppointmentDetailModal from '@/components/agenda/AppointmentDetailModal.vue'
+import AppointmentCreateModal from '@/components/agenda/AppointmentCreateModal.vue'
 
 const agenda = useAgendaStore()
 const servicesStore = useServicesStore()
+const businessStore = useBusinessStore()
 const employees = ref([])
 const selected = ref(null)
+const showCreate = ref(false)
+const businessId = computed(() => businessStore.business?.businessId || null)
 
 const friendlyError = computed(() => {
   if (agenda.error.includes('403')) return 'No tienes permiso para consultar esta agenda con la sesion actual.'
@@ -85,8 +101,14 @@ function handleUpdated(updated) {
   selected.value = null
 }
 
+async function handleCreated() {
+  showCreate.value = false
+  await agenda.fetchAgenda()
+}
+
 onMounted(async () => {
   await Promise.all([
+    businessStore.fetched ? Promise.resolve() : businessStore.fetchStatus().catch(() => {}),
     agenda.fetchAgenda(),
     servicesStore.fetched ? Promise.resolve() : servicesStore.fetchAll().catch(() => {}),
     employeeService.getEmployees().then((data) => { employees.value = data || [] }).catch(() => {}),
@@ -101,6 +123,7 @@ onMounted(async () => {
 .eyebrow { color: var(--neon); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
 .work-header h1 { font-size: 1.65rem; line-height: 1.1; margin: 4px 0 6px; }
 .work-header p { color: rgba(213, 240, 247, 0.58); margin: 0; }
+.header-actions { display: flex; gap: 10px; }
 .refresh-button { background: transparent; border: 1px solid rgba(213, 240, 247, 0.38); border-radius: 7px; color: var(--color-text); font-weight: 700; min-height: 40px; padding: 0 16px; }
 .refresh-button:hover { border-color: var(--neon); color: var(--neon); }
 .summary-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }

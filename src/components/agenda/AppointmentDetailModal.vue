@@ -31,7 +31,22 @@
         </button>
 
         <label class="field-label">Reprogramar</label>
-        <input v-model="newStartAt" class="field-select" type="datetime-local" />
+        <input v-model="newDate" class="field-select" type="date" :min="today" @change="loadRescheduleSlots" />
+        <button class="btn-secondary" :disabled="loadingSlots" @click="loadRescheduleSlots">
+          {{ loadingSlots ? 'Consultando...' : 'Buscar horarios disponibles' }}
+        </button>
+        <div v-if="rescheduleSlots.length" class="slots-grid">
+          <button
+            v-for="slot in rescheduleSlots"
+            :key="slot.startAt"
+            class="slot-btn"
+            :class="{ 'is-selected': newStartAt === slot.startAt }"
+            @click="newStartAt = slot.startAt"
+          >
+            {{ formatTime(slot.startAt) }}
+          </button>
+        </div>
+        <p v-else-if="slotsLoaded" class="empty-message">No hay horarios disponibles para esa fecha.</p>
         <button class="btn-secondary" :disabled="rescheduling || !newStartAt" @click="saveReschedule">
           {{ rescheduling ? 'Reprogramando...' : 'Reprogramar cita' }}
         </button>
@@ -44,6 +59,7 @@
 import { ref } from 'vue'
 import dayjs from 'dayjs'
 import { businessAppointmentService } from '@/api/businessAppointments'
+import { publicBusinessService } from '@/api/publicBusiness'
 
 const props = defineProps({
   appointment: { type: Object, required: true },
@@ -51,13 +67,21 @@ const props = defineProps({
 const emit = defineEmits(['close', 'updated'])
 
 const newStatus = ref(props.appointment.status)
-const newStartAt = ref(dayjs(props.appointment.startAt).format('YYYY-MM-DDTHH:mm'))
+const today = dayjs().format('YYYY-MM-DD')
+const newDate = ref(dayjs(props.appointment.startAt).format('YYYY-MM-DD'))
+const newStartAt = ref('')
+const rescheduleSlots = ref([])
+const slotsLoaded = ref(false)
+const loadingSlots = ref(false)
 const saving = ref(false)
 const rescheduling = ref(false)
 const error = ref('')
 
 function formatDate(dateStr) {
   return dayjs(dateStr).format('DD MMM YYYY, h:mm A')
+}
+function formatTime(dateStr) {
+  return dayjs(dateStr).format('h:mm A')
 }
 function originLabel(origin) {
   return { PUBLIC: 'Cliente (público)', PRIVATE: 'Negocio', ADMIN: 'Admin' }[origin] || origin
@@ -76,6 +100,27 @@ async function saveStatus() {
     error.value = err.message || 'No se pudo actualizar el estado.'
   } finally {
     saving.value = false
+  }
+}
+
+async function loadRescheduleSlots() {
+  loadingSlots.value = true
+  error.value = ''
+  newStartAt.value = ''
+  try {
+    const res = await publicBusinessService.getAvailability(
+      props.appointment.businessId,
+      props.appointment.serviceId,
+      newDate.value,
+      props.appointment.employeeId
+    )
+    rescheduleSlots.value = (res?.slots || []).filter((slot) => slot.startAt !== props.appointment.startAt)
+    slotsLoaded.value = true
+  } catch (err) {
+    error.value = err.message || 'No se pudo consultar disponibilidad.'
+    rescheduleSlots.value = []
+  } finally {
+    loadingSlots.value = false
   }
 }
 
@@ -122,4 +167,8 @@ async function saveReschedule() {
 .btn-secondary:hover { border-color: var(--neon); color: var(--neon); }
 .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.slot-btn { background: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); padding: 9px; }
+.slot-btn:hover, .slot-btn.is-selected { border-color: var(--neon); color: var(--neon); }
+.empty-message { color: var(--color-text-muted); font-size: 0.82rem; margin: 10px 0 0; }
 </style>
