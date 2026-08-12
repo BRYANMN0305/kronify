@@ -24,7 +24,7 @@ export const userService = {
 
   /** updatePassword — Cambia la contraseña actual del usuario */
   updatePassword(payload) {
-    return request('/users/updatedPassword', {
+    return request('/user/updatePassword', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     })

@@ -11,7 +11,7 @@
     <div class="settings-section-header">
       <div>
         <h3 class="settings-section-title">Cambiar contraseña</h3>
-        <p class="settings-section-subtitle">Usa al menos 6 caracteres para tu nueva contraseña</p>
+        <p class="settings-section-subtitle">Usa al menos 8 caracteres para tu nueva contraseña</p>
       </div>
     </div>
 
@@ -106,8 +106,8 @@ const validate = () => {
   if (!form.newPassword) {
     errors.newPassword = 'La nueva contraseña es obligatoria'
     ok = false
-  } else if (form.newPassword.length < 6) {
-    errors.newPassword = 'Mínimo 6 caracteres'
+  } else if (form.newPassword.length < 8) {
+    errors.newPassword = 'Mínimo 8 caracteres'
     ok = false
   }
   if (!form.confirmPassword) {
