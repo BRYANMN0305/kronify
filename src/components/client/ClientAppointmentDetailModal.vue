@@ -5,7 +5,6 @@
       role="dialog"
       aria-modal="true"
       :aria-label="appointment.serviceName"
-      tabindex="-1"
     >
       <header class="kd-header">
         <h3 class="kd-title">{{ appointment.serviceName }}</h3>
@@ -13,27 +12,6 @@
       </header>
 
       <div class="kd-body">
-        <section class="kd-section">
-          <h4 class="kd-section-title">
-            <span class="kd-section-dot"></span>
-            Información del cliente
-          </h4>
-          <div class="kd-grid">
-            <div class="kd-field">
-              <span class="kd-field-label">Cliente</span>
-              <span class="kd-field-value">{{ appointment.customerName || 'Sin nombre' }}</span>
-            </div>
-            <div class="kd-field" v-if="appointment.customerPhone">
-              <span class="kd-field-label">Teléfono</span>
-              <span class="kd-field-value">{{ appointment.customerPhone }}</span>
-            </div>
-            <div class="kd-field kd-field-full" v-if="appointment.customerEmail">
-              <span class="kd-field-label">Email</span>
-              <span class="kd-field-value kd-truncate">{{ appointment.customerEmail }}</span>
-            </div>
-          </div>
-        </section>
-
         <section class="kd-section">
           <h4 class="kd-section-title">
             <span class="kd-section-dot"></span>
@@ -61,108 +39,142 @@
               <span class="kd-field-value">{{ appointment.serviceDurationMinutes }} min</span>
             </div>
             <div class="kd-field">
-              <span class="kd-field-label">Origen</span>
-              <span class="kd-field-value">{{ originLabel(appointment.origin) }}</span>
+              <span class="kd-field-label">Estado</span>
+              <span class="kd-field-value">
+                <span class="kd-status-badge" :class="`kd-status-${appointment.status}`">
+                  {{ statusLabel(appointment.status) }}
+                </span>
+              </span>
             </div>
           </div>
         </section>
 
-        <section class="kd-section">
+        <section v-if="!canManage" class="kd-section">
           <h4 class="kd-section-title">
             <span class="kd-section-dot"></span>
-            Estado de la cita
+            Gestión de la cita
           </h4>
-          <div class="kd-status-wrap">
-            <span class="kd-status-badge" :class="`kd-status-${appointment.status}`">
-              {{ statusLabel(appointment.status) }}
-            </span>
-            <p class="kd-hint">Cambia el estado de la cita desde el selector.</p>
-          </div>
-          <label class="kd-label" for="kd-status-select">Nuevo estado</label>
-          <select id="kd-status-select" v-model="newStatus" class="kd-select">
-            <option value="PENDING">Pendiente</option>
-            <option value="CONFIRMED">Confirmada</option>
-            <option value="COMPLETED">Completada</option>
-            <option value="CANCELLED">Cancelada</option>
-            <option value="NO_SHOW">No asistió</option>
-          </select>
-          <p v-if="error" class="kd-error">{{ error }}</p>
-          <button class="kd-btn kd-btn-primary" :disabled="saving || newStatus === appointment.status" @click="saveStatus">
-            {{ saving ? 'Guardando...' : 'Actualizar estado' }}
-          </button>
+          <p class="kd-empty">
+            Para confirmar, reprogramar o cancelar tu cita debes iniciar sesión como cliente registrado.
+          </p>
         </section>
 
-        <section class="kd-section">
-          <h4 class="kd-section-title">
-            <span class="kd-section-dot"></span>
-            Reprogramar cita
-          </h4>
-          <label class="kd-label" for="kd-reschedule-date">Nueva fecha</label>
-          <input
-            id="kd-reschedule-date"
-            v-model="newDate"
-            class="kd-select"
-            type="date"
-            :min="today"
-            @change="onDateChange"
-          />
-          <button class="kd-btn kd-btn-secondary" :disabled="loadingSlots" @click="loadRescheduleSlots">
-            {{ loadingSlots ? 'Consultando...' : 'Buscar horarios disponibles' }}
-          </button>
+        <template v-else>
+          <section class="kd-section">
+            <h4 class="kd-section-title">
+              <span class="kd-section-dot"></span>
+              Confirmar cita
+            </h4>
+            <p class="kd-hint">Confirma esta cita para reservar tu horario definitivamente.</p>
+            <p v-if="error" class="kd-error">{{ error }}</p>
+            <button
+              class="kd-btn kd-btn-primary"
+              :disabled="confirming || !canConfirm"
+              @click="confirmAppointment"
+            >
+              {{ confirming ? 'Confirmando...' : 'Confirmar cita' }}
+            </button>
+          </section>
 
-          <div v-if="loadingSlots" class="kd-slots-loading">Consultando disponibilidad...</div>
+          <section class="kd-section">
+            <h4 class="kd-section-title">
+              <span class="kd-section-dot"></span>
+              Reprogramar cita
+            </h4>
 
-          <template v-else-if="rescheduleSlots.length">
-            <p class="kd-hint">Selecciona un horario disponible:</p>
-            <div class="kd-slots">
+            <template v-if="canReschedule">
+              <label class="kd-label" for="kd-date">Nueva fecha</label>
+              <input
+                id="kd-date"
+                v-model="newDate"
+                class="kd-select"
+                type="date"
+                :min="today"
+                @change="onDateChange"
+              />
               <button
-                v-for="slot in rescheduleSlots"
-                :key="slot.startAt"
-                type="button"
-                class="kd-slot"
-                :class="{ 'is-selected': newStartAt === slot.startAt }"
-                @click="newStartAt = slot.startAt"
+                class="kd-btn kd-btn-secondary"
+                :disabled="loadingSlots"
+                @click="loadRescheduleSlots"
               >
-                {{ formatTime(slot.startAt) }}
+                {{ loadingSlots ? 'Consultando...' : 'Buscar horarios disponibles' }}
               </button>
-            </div>
-          </template>
 
-          <p v-else-if="slotsLoaded" class="kd-empty">No hay horarios disponibles para esa fecha.</p>
+              <div v-if="loadingSlots" class="kd-slots-loading">Consultando disponibilidad...</div>
 
-          <button
-            class="kd-btn kd-btn-primary kd-btn-reschedule"
-            :disabled="rescheduling || !newStartAt"
-            @click="saveReschedule"
-          >
-            {{ rescheduling ? 'Reprogramando...' : 'Reprogramar cita' }}
-          </button>
-        </section>
+              <template v-else-if="rescheduleSlots.length">
+                <p class="kd-hint">Selecciona un horario disponible:</p>
+                <div class="kd-slots">
+                  <button
+                    v-for="slot in rescheduleSlots"
+                    :key="slot.startAt"
+                    type="button"
+                    class="kd-slot"
+                    :class="{ 'is-selected': newStartAt === slot.startAt }"
+                    @click="newStartAt = slot.startAt"
+                  >
+                    {{ formatTime(slot.startAt) }}
+                  </button>
+                </div>
+              </template>
+
+              <p v-else-if="slotsLoaded" class="kd-empty">No hay horarios disponibles para esa fecha.</p>
+
+              <button
+                class="kd-btn kd-btn-primary kd-btn-reschedule"
+                :disabled="rescheduling || !newStartAt"
+                @click="saveReschedule"
+              >
+                {{ rescheduling ? 'Reprogramando...' : 'Reprogramar cita' }}
+              </button>
+            </template>
+
+            <p v-else class="kd-empty">No hay datos suficientes para reprogramar esta cita.</p>
+          </section>
+
+          <section class="kd-section kd-section-danger">
+            <h4 class="kd-section-title">
+              <span class="kd-section-dot"></span>
+              Cancelar cita
+            </h4>
+            <p class="kd-hint">Una vez cancelada no podrás revertir la acción.</p>
+            <button
+              class="kd-btn kd-btn-danger"
+              :disabled="cancelling || !canCancel"
+              @click="cancelAppointment"
+            >
+              {{ cancelling ? 'Cancelando...' : 'Cancelar cita' }}
+            </button>
+          </section>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import dayjs from 'dayjs'
-import { businessAppointmentService } from '@/api/businessAppointments'
+import { request } from '@/api/http'
+import { appointmentService } from '@/api/appointment'
 import { publicBusinessService } from '@/api/publicBusiness'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   appointment: { type: Object, required: true },
 })
 const emit = defineEmits(['close', 'updated'])
 
-const newStatus = ref(props.appointment.status)
+const authStore = useAuthStore()
+
 const today = dayjs().format('YYYY-MM-DD')
 const newDate = ref(dayjs(props.appointment.startAt).format('YYYY-MM-DD'))
 const newStartAt = ref('')
-
 const rescheduleSlots = ref([])
 const slotsLoaded = ref(false)
 const loadingSlots = ref(false)
-const saving = ref(false)
+const confirming = ref(false)
+const cancelling = ref(false)
 const rescheduling = ref(false)
 const error = ref('')
 
@@ -179,6 +191,19 @@ const STATUS_LABELS = {
   NO_SHOW: 'No asistió',
 }
 
+const canManage = computed(
+  () => authStore.isAuthenticated && authStore.profileType === 'CLIENT'
+)
+const canConfirm = computed(
+  () => canManage.value && props.appointment.status === 'PENDING'
+)
+const canCancel = computed(
+  () => canManage.value && ['PENDING', 'CONFIRMED'].includes(props.appointment.status)
+)
+const canReschedule = computed(
+  () => canManage.value && !['COMPLETED', 'CANCELLED'].includes(props.appointment.status)
+)
+
 function formatLongDate(dateStr) {
   const d = dayjs(dateStr)
   return `${d.date()} de ${MONTHS[d.month()]} de ${d.year()}`
@@ -186,10 +211,6 @@ function formatLongDate(dateStr) {
 
 function formatTime(dateStr) {
   return dayjs(dateStr).format('h:mm A')
-}
-
-function originLabel(origin) {
-  return { PUBLIC: 'Cliente (público)', PRIVATE: 'Negocio', ADMIN: 'Admin' }[origin] || origin
 }
 
 function statusLabel(status) {
@@ -210,23 +231,25 @@ function onDateChange() {
   slotsLoaded.value = false
 }
 
-async function saveStatus() {
-  saving.value = true
+async function confirmAppointment() {
+  if (!canManage.value) return
+  confirming.value = true
   error.value = ''
   try {
-    const updated = await businessAppointmentService.updateStatus(props.appointment.appointmentId, {
-      status: newStatus.value,
+    const updated = await request(`/appointments/${props.appointment.appointmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'CONFIRMED' }),
     })
     emit('updated', updated)
-    close()
   } catch (err) {
-    error.value = err.message || 'No se pudo actualizar el estado.'
+    error.value = err.message || 'No se pudo confirmar la cita.'
   } finally {
-    saving.value = false
+    confirming.value = false
   }
 }
 
 async function loadRescheduleSlots() {
+  if (!canManage.value) return
   loadingSlots.value = true
   error.value = ''
   newStartAt.value = ''
@@ -248,18 +271,33 @@ async function loadRescheduleSlots() {
 }
 
 async function saveReschedule() {
+  if (!canManage.value) return
   rescheduling.value = true
   error.value = ''
   try {
-    const updated = await businessAppointmentService.reschedule(props.appointment.appointmentId, {
-      startAt: newStartAt.value,
+    const updated = await request(`/appointments/${props.appointment.appointmentId}/reschedule`, {
+      method: 'PATCH',
+      body: JSON.stringify({ startAt: newStartAt.value }),
     })
     emit('updated', updated)
-    close()
   } catch (err) {
     error.value = err.message || 'No se pudo reprogramar la cita.'
   } finally {
     rescheduling.value = false
+  }
+}
+
+async function cancelAppointment() {
+  if (!canManage.value) return
+  cancelling.value = true
+  error.value = ''
+  try {
+    const updated = await appointmentService.cancel(props.appointment.appointmentId)
+    emit('updated', updated)
+  } catch (err) {
+    error.value = err.message || 'No se pudo cancelar la cita.'
+  } finally {
+    cancelling.value = false
   }
 }
 
@@ -268,7 +306,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <style scoped>
-/* ===== Overlay ===== */
 .kd-overlay {
   align-items: center;
   background: rgba(6, 13, 16, 0.82);
@@ -281,7 +318,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   backdrop-filter: blur(3px);
 }
 
-/* ===== Modal ===== */
 .kd-modal {
   background: radial-gradient(circle at top, rgba(63, 225, 255, 0.06), transparent 42%), #0f2027;
   border: 1px solid rgba(63, 225, 255, 0.16);
@@ -302,7 +338,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ===== Header ===== */
 .kd-header {
   align-items: center;
   border-bottom: 1px solid rgba(63, 106, 120, 0.45);
@@ -335,13 +370,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   color: #3fe1ff;
 }
 
-/* ===== Body / scroll ===== */
 .kd-body {
   overflow-y: auto;
   padding: 8px 22px 22px;
 }
 
-/* ===== Sections ===== */
 .kd-section {
   border: 1px solid rgba(63, 106, 120, 0.4);
   border-radius: 12px;
@@ -369,7 +402,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   width: 6px;
 }
 
-/* ===== Info grid ===== */
 .kd-grid {
   display: grid;
   gap: 10px;
@@ -385,9 +417,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   min-width: 0;
   padding: 9px 12px;
 }
-.kd-field-full {
-  grid-column: 1 / -1;
-}
 .kd-field-label {
   color: rgba(213, 240, 247, 0.55);
   font-size: 0.68rem;
@@ -401,26 +430,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   font-weight: 600;
   line-height: 1.35;
 }
-.kd-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
-/* ===== Estado ===== */
-.kd-status-wrap {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
-}
 .kd-status-badge {
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.03em;
-  padding: 5px 12px;
+  padding: 4px 11px;
 }
 .kd-status-PENDING {
   background: rgba(63, 225, 255, 0.14);
@@ -444,7 +460,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   color: #ff8585;
 }
 
-/* ===== Form ===== */
 .kd-hint {
   color: rgba(213, 240, 247, 0.6);
   font-size: 0.78rem;
@@ -491,7 +506,6 @@ input.kd-select::-webkit-calendar-picker-indicator {
   margin: 10px 0 0;
 }
 
-/* ===== Botones ===== */
 .kd-btn {
   border-radius: 10px;
   cursor: pointer;
@@ -524,11 +538,26 @@ input.kd-select::-webkit-calendar-picker-indicator {
   border-color: #3fe1ff;
   color: #3fe1ff;
 }
+.kd-btn-danger {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  color: #ff8585;
+}
+.kd-btn-danger:hover:not(:disabled) {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: #ff8585;
+}
 .kd-btn-reschedule {
   margin-top: 16px;
 }
+.kd-section-danger .kd-section-title {
+  color: #ff8585;
+}
+.kd-section-danger .kd-section-dot {
+  background: #ff8585;
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.7);
+}
 
-/* ===== Slots ===== */
 .kd-slots-loading,
 .kd-empty {
   color: rgba(213, 240, 247, 0.65);
@@ -561,7 +590,6 @@ input.kd-select::-webkit-calendar-picker-indicator {
   color: #081013;
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 640px) {
   .kd-grid {
     grid-template-columns: 1fr;
@@ -571,9 +599,6 @@ input.kd-select::-webkit-calendar-picker-indicator {
   }
   .kd-body {
     padding: 8px 16px 16px;
-  }
-  .kd-modal {
-    max-width: 100%;
   }
 }
 </style>
