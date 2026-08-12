@@ -341,17 +341,8 @@ watch(
 
 async function loadAutofill() {
   if (!localStorage.getItem('token') || !isClientSession.value) return
-  try {
-    const data = await appointmentService.getAutofill()
-    form.value = {
-      customerName: data.name || '',
-      customerLastName: data.lastName || '',
-      customerPhone: data.phoneNumber || '',
-      customerEmail: data.email || '',
-    }
-  } catch {
-    // Solo los clientes autenticados tienen datos de autocompletado.
-  }
+  const data = await appointmentService.getAutofill()
+  form.value = { customerName: data.name, customerLastName: data.lastName, customerPhone: data.phoneNumber, customerEmail: data.email }
 }
 
 function selectService(service) {
