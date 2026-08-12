@@ -6,7 +6,6 @@
           <span class="eyebrow">Tu calendario</span>
           <h1>Calendario</h1>
         </div>
-        
       </header>
 
       <div class="calendar-toolbar">
@@ -28,31 +27,12 @@
       </section>
     </div>
 
-    <div v-if="selected" class="overlay" @click.self="selected = null">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 class="modal-title">{{ selected.serviceName }}</h3>
-          <button class="btn-icon" @click="selected = null">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="row"><span class="label">Profesional</span><span>{{ selected.employeeName }}</span></div>
-          <div class="row"><span class="label">Fecha</span><span>{{ formatDate(selected.startAt) }}</span></div>
-          <div class="row"><span class="label">Duración</span><span>{{ selected.serviceDurationMinutes }} min</span></div>
-          <div class="row"><span class="label">Estado</span><span>{{ statusLabel(selected.status) }}</span></div>
-
-          <p v-if="cancelError" class="error-message">{{ cancelError }}</p>
-
-          <button
-            v-if="canCancel(selected)"
-            class="btn-primary"
-            :disabled="cancelling"
-            @click="doCancel"
-          >
-            {{ cancelling ? 'Cancelando...' : 'Cancelar cita' }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <ClientAppointmentDetailModal
+      v-if="selected"
+      :appointment="selected"
+      @close="selected = null"
+      @updated="handleUpdated"
+    />
   </div>
 </template>
 
@@ -61,13 +41,12 @@ import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { appointmentService } from '@/api/appointment'
 import MonthCalendar from '@/components/agenda/MonthCalendar.vue'
+import ClientAppointmentDetailModal from '@/components/client/ClientAppointmentDetailModal.vue'
 
 const appointments = ref([])
 const loading = ref(false)
 const error = ref('')
 const selected = ref(null)
-const cancelling = ref(false)
-const cancelError = ref('')
 const currentMonth = ref(dayjs().format('YYYY-MM'))
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -77,7 +56,6 @@ const monthLabel = computed(() => {
   return `${MONTHS[d.month()]} ${d.year()}`
 })
 
-// Filtra en el front las citas del mes visible (el historial ya viene ordenado por fecha)
 const appointmentsInMonth = computed(() => {
   const start = dayjs(currentMonth.value).startOf('month')
   const end = dayjs(currentMonth.value).endOf('month')
@@ -95,7 +73,6 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    // Endpoint propio del cliente: no requiere negocio asociado al usuario
     const page = await appointmentService.getHistory({ page: 0, size: 200, sort: 'startAt,asc' })
     appointments.value = page?.content || []
   } catch (err) {
@@ -105,37 +82,11 @@ async function load() {
   }
 }
 
-function canCancel(ap) {
-  return ap.status === 'PENDING' || ap.status === 'CONFIRMED'
-}
-
-async function doCancel() {
-  if (!selected.value) return
-  cancelling.value = true
-  cancelError.value = ''
-  try {
-    const updated = await appointmentService.cancel(selected.value.appointmentId)
-    appointments.value = appointments.value.map((item) =>
-      item.appointmentId === updated.appointmentId ? updated : item
-    )
-    selected.value = updated
-  } catch (err) {
-    cancelError.value = err.message || 'No se pudo cancelar la cita'
-  } finally {
-    cancelling.value = false
-  }
-}
-
-function formatDate(date) {
-  return dayjs(date).format('DD MMM YYYY, HH:mm')
-}
-
-function statusLabel(status) {
-  const map = {
-    PENDING: 'Pendiente', CONFIRMED: 'Confirmada', COMPLETED: 'Completada',
-    CANCELLED: 'Cancelada', NO_SHOW: 'No asistió',
-  }
-  return map[status] || status
+function handleUpdated(updated) {
+  appointments.value = appointments.value.map((item) =>
+    item.appointmentId === updated.appointmentId ? updated : item
+  )
+  selected.value = updated
 }
 
 onMounted(load)
@@ -152,22 +103,9 @@ onMounted(load)
 .toolbar-month-title { color: var(--color-text); font-size: 1.2rem; font-weight: 800; min-width: 150px; }
 .toolbar-nav { background: #1e3d49; border: 1px solid rgba(63, 106, 120, 0.5); border-radius: 8px; color: #d5f0f7; cursor: pointer; font-size: 1.1rem; height: 36px; line-height: 1; width: 36px; }
 .toolbar-nav:hover { background: #10252c; border-color: rgba(63, 225, 255, 0.5); color: var(--neon); }
-.toolbar-button { background: transparent; border: 1px solid rgba(213, 240, 247, 0.38); border-radius: 8px; color: var(--color-text); cursor: pointer; font-size: 0.86rem; font-weight: 700; height: 38px; padding: 0 16px; }
-.toolbar-button:hover { border-color: var(--neon); color: var(--neon); }
 .calendar-panel { border-radius: 12px; }
 .calendar-note, .state { background: rgba(16, 37, 44, 0.72); border: 1px solid rgba(63, 225, 255, 0.12); border-radius: 8px; color: rgba(213, 240, 247, 0.68); margin-bottom: 16px; padding: 14px; }
 .state-error { border-color: rgba(255, 107, 107, 0.3); color: #ff8585; }
-
-.overlay { align-items: center; background: rgba(6, 13, 16, 0.72); display: flex; inset: 0; justify-content: center; position: fixed; z-index: 50; }
-.modal { background: #10252c; border: 1px solid rgba(63, 225, 255, 0.18); border-radius: 12px; max-width: 420px; padding: 20px; width: 90%; }
-.modal-header { align-items: center; display: flex; justify-content: space-between; margin-bottom: 14px; }
-.modal-title { font-size: 1.1rem; margin: 0; }
-.btn-icon { background: none; border: none; color: #d5f0f7; cursor: pointer; font-size: 1.3rem; }
-.row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.label { color: rgba(213, 240, 247, 0.6); }
-.btn-primary { background: var(--neon); border: none; border-radius: 8px; color: #081013; cursor: pointer; font-weight: 700; height: 40px; margin-top: 10px; width: 100%; }
-.btn-primary:disabled { opacity: 0.6; }
-.error-message { color: #ff8585; font-size: 0.85rem; }
 
 @media (max-width: 560px) {
   .work-page { padding: 20px 14px; }
