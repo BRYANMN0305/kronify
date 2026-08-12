@@ -2,7 +2,6 @@
   <div class="work-page">
     <header class="work-header">
       <h1>Negocios Recientes</h1>
-      <button class="btn btn-outline-light" @click="load">Actualizar</button>
     </header>
 
     <section v-if="isClient" class="recent-section">
