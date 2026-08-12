@@ -122,8 +122,10 @@
           <form class="settings-section settings-form" novalidate @submit.prevent="submit">
             <div class="settings-section-header">
               <div>
-                <h3 class="settings-section-title">Tus datos</h3>
-                <p class="settings-section-subtitle">¿Cómo te contactamos?</p>
+                <h3 v-if="internal" class="settings-section-title">Datos del cliente</h3>
+                <h3 v-else class="settings-section-title">Tus datos</h3>
+                <p v-if="internal" class="settings-section-subtitle">¿Cómo contactamos al cliente?</p>
+                <p v-else class="settings-section-subtitle">¿Cómo te contactamos?</p>
               </div>
             </div>
 
@@ -163,8 +165,14 @@
         <!-- Paso 5: Confirmación -->
         <div v-else class="step-confirm">
           <div class="confirm-icon">✓</div>
-          <p class="confirm-title">¡Cita confirmada!</p>
-          <p class="confirm-text">Te esperamos el {{ formatDate(selectedSlot.startAt) }}.</p>
+          <p v-if="internal" class="confirm-title">¡Cita confirmada!</p>
+          <p v-else class="confirm-title">¡Cita programada!</p>
+          <p v-if="internal" class="confirm-text">
+            La cita para {{ form.customerName }} el {{ formatDate(selectedSlot.startAt) }} quedó confirmada.
+          </p>
+          <p v-else class="confirm-text">
+            Tu cita del {{ formatDate(selectedSlot.startAt) }} está pendiente de confirmación por el empleado.
+          </p>
           <button class="btn-confirm" @click="close">Listo</button>
         </div>
       </div>
@@ -177,6 +185,7 @@ import { ref, computed, watch } from 'vue'
 import dayjs from 'dayjs'
 import { publicBusinessService } from '@/api/publicBusiness'
 import { appointmentService } from '@/api/appointment'
+import { businessAppointmentService } from '@/api/businessAppointments'
 
 const CO = -300
 
@@ -184,6 +193,8 @@ const props = defineProps({
   modelValue: { type: Boolean, default: false },
   business: { type: Object, required: true },
   initialService: { type: Object, default: null },
+  /** internal — true cuando se agenda desde el panel del negocio (dueño/empleado) */
+  internal: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue', 'booked'])
 
@@ -419,7 +430,11 @@ async function submit() {
       customerPhone: form.value.customerPhone,
       customerEmail: form.value.customerEmail,
     }
-    await appointmentService.create(payload, { skipAuth: !isClientSession.value })
+    if (props.internal) {
+      await businessAppointmentService.create(payload)
+    } else {
+      await appointmentService.create(payload, { skipAuth: !isClientSession.value })
+    }
     step.value = 5
     emit('booked')
   } catch (err) {

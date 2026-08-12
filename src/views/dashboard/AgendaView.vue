@@ -7,8 +7,10 @@
           <h1>Calendario</h1>
         </div>
         <div class="header-actions">
-          
-          <button class="toolbar-button toolbar-button--primary" @click="showCreate = true">Nueva cita</button>
+          <button class="toolbar-button" @click="applyFilters">Actualizar</button>
+          <button class="toolbar-button toolbar-button--primary" :disabled="loadingBooking" @click="openBooking">
+            {{ loadingBooking ? 'Cargando...' : 'Nueva cita' }}
+          </button>
         </div>
       </header>
 
@@ -60,13 +62,12 @@
       @close="selected = null"
       @updated="handleUpdated"
     />
-    <AppointmentCreateModal
-      v-if="showCreate"
-      :business-id="businessId"
-      :services="servicesStore.services"
-      :employees="employees"
-      @close="showCreate = false"
-      @created="handleCreated"
+    <BookingModal
+      v-if="bookingBusiness"
+      v-model="showCreate"
+      :business="bookingBusiness"
+      :internal="true"
+      @booked="handleCreated"
     />
   </div>
 </template>
@@ -77,21 +78,28 @@ import dayjs from 'dayjs'
 import { useAgendaStore } from '@/stores/agenda'
 import { useServicesStore } from '@/stores/services'
 import { useBusinessStore } from '@/stores/business'
+import { useAuthStore } from '@/stores/auth'
 import { employeeService } from '@/api/employee'
+import { publicBusinessService } from '@/api/publicBusiness'
 import MonthCalendar from '@/components/agenda/MonthCalendar.vue'
 import AppointmentDetailModal from '@/components/agenda/AppointmentDetailModal.vue'
-import AppointmentCreateModal from '@/components/agenda/AppointmentCreateModal.vue'
+import BookingModal from '@/components/booking/BookingModal.vue'
 
 const agenda = useAgendaStore()
 const servicesStore = useServicesStore()
 const businessStore = useBusinessStore()
+const authStore = useAuthStore()
 
 const employees = ref([])
 const selected = ref(null)
 const showCreate = ref(false)
+const bookingBusiness = ref(null)
+const loadingBooking = ref(false)
 const currentMonth = ref(dayjs().format('YYYY-MM'))
 const filters = reactive({ employeeId: '', serviceId: '', status: '' })
 const businessId = computed(() => businessStore.business?.businessId || null)
+const isOwner = computed(() => authStore.isBusiness && businessStore.hasBusiness)
+const myEmployeeId = computed(() => businessStore.employees[0]?.employeeId || null)
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -128,11 +136,49 @@ async function handleCreated() {
   await agenda.fetchAgenda()
 }
 
+/** openBooking — Carga los datos públicos del negocio y abre el modal de reserva */
+async function openBooking() {
+  if (bookingBusiness.value) {
+    showCreate.value = true
+    return
+  }
+  loadingBooking.value = true
+  try {
+    const slug = authStore.user?.slug
+    if (!slug) throw new Error('No hay un negocio asociado a tu cuenta')
+    const data = await publicBusinessService.getBySlug(slug)
+    if (!isOwner.value && myEmployeeId.value) {
+      data.employees = (data.employees || []).filter((emp) => emp.employeeId === myEmployeeId.value)
+    }
+    bookingBusiness.value = data
+    showCreate.value = true
+  } catch (e) {
+    alert(e?.message || 'No se pudo cargar el negocio para agendar citas.')
+  } finally {
+    loadingBooking.value = false
+  }
+}
+
+/** loadEmployees — Lista de empleados del filtro; si no es dueño, cae a su propio registro */
+async function loadEmployees() {
+  try {
+    const list = await employeeService.getEmployees()
+    employees.value = list || []
+  } catch {
+    try {
+      const me = await employeeService.getMyEmployee()
+      employees.value = me ? [me] : []
+    } catch {
+      employees.value = []
+    }
+  }
+}
+
 onMounted(async () => {
   await Promise.all([
     businessStore.fetched ? Promise.resolve() : businessStore.fetchStatus().catch(() => {}),
     servicesStore.fetched ? Promise.resolve() : servicesStore.fetchAll().catch(() => {}),
-    employeeService.getEmployees().then((data) => { employees.value = data || [] }).catch(() => {}),
+    loadEmployees(),
   ])
   applyFilters()
 })
