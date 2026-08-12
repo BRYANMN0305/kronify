@@ -503,37 +503,40 @@ input.kd-select::-webkit-calendar-picker-indicator {
   transition: background 0.15s, border-color 0.15s, color 0.15s, filter 0.15s;
   width: 100%;
 }
+
 .kd-btn:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
+
 .kd-btn-primary {
-  background: #3fe1ff;
-  border: 1px solid #3fe1ff;
-  color: #081013;
+  background: var(--color-primary);
+  border: 1px solid var(--neon-dim);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
 }
+
 .kd-btn-primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: var(--color-primary);
+  border-color: var(--neon-dim);
+  color: #fff;
+  filter: none;
+  box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
 }
+
 .kd-btn-secondary {
   background: transparent;
   border: 1px solid rgba(213, 240, 247, 0.35);
   color: #d5f0f7;
 }
+
 .kd-btn-secondary:hover:not(:disabled) {
   border-color: #3fe1ff;
   color: #3fe1ff;
 }
+
 .kd-btn-reschedule {
   margin-top: 16px;
-}
-
-/* ===== Slots ===== */
-.kd-slots-loading,
-.kd-empty {
-  color: rgba(213, 240, 247, 0.65);
-  font-size: 0.82rem;
-  margin: 12px 0 0;
 }
 .kd-slots {
   display: grid;
@@ -541,6 +544,7 @@ input.kd-select::-webkit-calendar-picker-indicator {
   grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
   margin-top: 12px;
 }
+
 .kd-slot {
   background: rgba(63, 106, 120, 0.35);
   border: 1px solid rgba(63, 106, 120, 0.5);
@@ -550,11 +554,16 @@ input.kd-select::-webkit-calendar-picker-indicator {
   font-size: 0.82rem;
   font-weight: 700;
   padding: 9px 6px;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
+
 .kd-slot:hover {
   border-color: rgba(63, 225, 255, 0.6);
 }
+
 .kd-slot.is-selected {
   background: #3fe1ff;
   border-color: #3fe1ff;

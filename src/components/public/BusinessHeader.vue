@@ -33,9 +33,9 @@
 
       <aside class="booking-card">
         <span class="booking-label">Reserva online</span>
-        <strong>Agenda tu próxima cita</strong>
+        <strong>Programa tu próxima cita</strong>
         <p>Elige servicio, profesional y horario disponible en minutos.</p>
-        <button class="btn-book" @click="$emit('book')">Reservar ahora</button>
+        <button class="btn btn-primary" @click="$emit('book')">Programar ahora</button>
       </aside>
     </div>
 
@@ -128,11 +128,45 @@ const hoursRanges = computed(() => {
 .booking-label { color: var(--neon); font-size: 0.74rem; font-weight: 800; text-transform: uppercase; }
 .booking-card strong { color: var(--color-text); display: block; font-size: 1.25rem; margin-top: 8px; }
 .booking-card p { color: rgba(213, 240, 247, 0.62); font-size: 0.9rem; line-height: 1.45; margin: 8px 0 18px; }
-.btn-book {
-  background: var(--neon); border: none; border-radius: 10px; color: var(--color-bg); cursor: pointer; font-size: 0.95rem; font-weight: 800;
-  padding: 13px 24px; width: 100%;
+.booking-card {
+  background: rgba(6, 13, 16, 0.45);
+  border: 1px solid rgba(63, 225, 255, 0.22);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
 }
-.btn-book:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+.booking-card .btn-primary {
+  width: 100%;
+  margin-top: auto;
+
+  background: var(--color-primary);
+  border: 1px solid var(--neon-dim);
+  border-radius: 8px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
+
+  transition:
+    background 0.2s,
+    transform 0.1s,
+    box-shadow 0.2s;
+}
+
+.booking-card .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
+}
+ 
 .hours { align-items: center; border-top: 1px solid rgba(213, 240, 247, 0.09); display: flex; gap: 14px; margin: 0 auto; max-width: 1180px; padding: 16px 28px 20px; position: relative; }
 .hours-label { color: var(--color-text-label); flex-shrink: 0; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
 .hours-list { display: flex; flex-wrap: wrap; gap: 8px; }

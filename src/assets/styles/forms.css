@@ -115,10 +115,4 @@ input[type='number']::-webkit-inner-spin-button {
     opacity: 0.6;
 }
 
-/* ---- Botones: quitar sombreado blanco de Bootstrap ---- */
-.btn:hover,
-.btn:focus,
-.btn:active,
-.btn:focus-visible {
-    box-shadow: none !important;
-}
+/* ---- Botones: el sistema de sombras y hover vive en buttons.css ---- */

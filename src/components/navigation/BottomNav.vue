@@ -55,7 +55,7 @@ const navItems = computed(() => {
     items.push({ name: 'Resenas', label: 'Reseñas', path: '/resenas', icon: usersIcon })
   }
   if (!authStore.isBusiness) {
-    items.push({ name: 'MisCitas', label: 'Mis citas', path: '/mis-citas', icon: clockIcon })
+    items.push({ name: 'NegociosRecientes', label: 'Negocios recientes', path: '/negocios-recientes', icon: clockIcon })
   }
   items.push({ name: 'Configuracion', label: 'Configuración', path: '/configuracion', icon: settingsIcon })
   return items
