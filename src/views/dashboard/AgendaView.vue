@@ -7,8 +7,7 @@
           <h1>Calendario</h1>
         </div>
         <div class="header-actions">
-          <button class="toolbar-button" @click="applyFilters">Actualizar</button>
-          <button class="toolbar-button toolbar-button--primary" :disabled="loadingBooking" @click="openBooking">
+          <button class="btn btn-primary" :disabled="loadingBooking" @click="openBooking">
             {{ loadingBooking ? 'Cargando...' : 'Nueva cita' }}
           </button>
         </div>
@@ -73,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import dayjs from 'dayjs'
 import { useAgendaStore } from '@/stores/agenda'
 import { useServicesStore } from '@/stores/services'
@@ -81,6 +80,7 @@ import { useBusinessStore } from '@/stores/business'
 import { useAuthStore } from '@/stores/auth'
 import { employeeService } from '@/api/employee'
 import { publicBusinessService } from '@/api/publicBusiness'
+import { BASE_URL } from '@/api/http'
 import MonthCalendar from '@/components/agenda/MonthCalendar.vue'
 import AppointmentDetailModal from '@/components/agenda/AppointmentDetailModal.vue'
 import BookingModal from '@/components/booking/BookingModal.vue'
@@ -181,6 +181,31 @@ onMounted(async () => {
     loadEmployees(),
   ])
   applyFilters()
+  setupAppointmentStream()
+})
+
+/** setupAppointmentStream — Escucha en tiempo real las citas nuevas del negocio */
+let eventSource = null
+
+function setupAppointmentStream() {
+  const token = authStore.token
+  if (!token) return
+  eventSource = new EventSource(`${BASE_URL}/business/appointments/stream?token=${encodeURIComponent(token)}`)
+  eventSource.addEventListener('appointment.created', (event) => {
+    try {
+      const appointment = JSON.parse(event.data)
+      if (agenda.matchesFilters(appointment)) agenda.upsertAppointment(appointment)
+    } catch {
+      /* evento inválido: se ignora */
+    }
+  })
+  eventSource.onerror = () => {
+    // EventSource reconecta automáticamente; no se recarga la página
+  }
+}
+
+onUnmounted(() => {
+  if (eventSource) eventSource.close()
 })
 </script>
 
@@ -192,6 +217,37 @@ onMounted(async () => {
 .eyebrow { color: var(--neon); display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .work-header h1 { font-size: 1.65rem; line-height: 1.1; margin: 4px 0 0; }
 .header-actions { display: flex; gap: 10px; }
+
+.header-actions .btn-primary {
+  background: var(--color-primary);
+  border: 1px solid var(--neon-dim);
+  border-radius: 8px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+.header-actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
+}
+.header-actions .btn-primary:active {
+  background: var(--color-primary) !important;
+  border-color: var(--neon-dim) !important;
+  transform: scale(0.98);
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
+}
+.header-actions .btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+.header-actions .btn-primary:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
 
 .calendar-toolbar { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 16px; }
 .toolbar-month { align-items: center; display: flex; gap: 10px; }
@@ -232,26 +288,6 @@ onMounted(async () => {
 .toolbar-select:hover { background-color: #10252c; border-color: rgba(63, 225, 255, 0.45); }
 .toolbar-select:focus { border-color: var(--neon); outline: none; }
 .toolbar-select option { background: #10252c; color: #d5f0f7; }
-
-.toolbar-button {
-  background: transparent;
-  border: 1px solid rgba(213, 240, 247, 0.38);
-  border-radius: 8px;
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 0.86rem;
-  font-weight: 700;
-  height: 38px;
-  padding: 0 16px;
-  transition: border-color 0.15s, color 0.15s;
-}
-.toolbar-button:hover { border-color: var(--neon); color: var(--neon); }
-.toolbar-button--primary {
-  background: var(--neon);
-  border-color: var(--neon);
-  color: #081013;
-}
-.toolbar-button--primary:hover { filter: brightness(1.05); color: #081013; }
 
 .calendar-panel { border-radius: 12px; }
 .calendar-note { background: rgba(16, 37, 44, 0.72); border: 1px solid rgba(63, 225, 255, 0.12); border-radius: 8px; color: rgba(213, 240, 247, 0.6); font-size: 0.88rem; margin-bottom: 16px; padding: 14px; }
