@@ -1,12 +1,13 @@
 <template>
-  <div class="overlay" @click.self="$emit('close')">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Nueva cita</h3>
-        <button class="btn-icon" @click="$emit('close')">x</button>
-      </div>
+ <!-- DESPUÉS -->
+<div class="ac-overlay" @click.self="$emit('close')">
+  <div class="ac-modal">
+    <div class="ac-modal-header">
+      <h3 class="ac-modal-title">Nueva cita</h3>
+      <button class="btn-icon" @click="$emit('close')">x</button>
+    </div>
 
-      <div class="modal-body">
+    <div class="ac-modal-body">
         <label class="field-label">Servicio</label>
         <select v-model="form.serviceId" class="field-select" @change="resetAvailability">
           <option value="">Selecciona un servicio</option>
@@ -149,12 +150,13 @@ async function save() {
 const formatTime = (value) => dayjs(value).format('h:mm A')
 </script>
 
-<style scoped>
-.overlay { position: fixed; inset: 0; background: rgba(6,13,16,0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
-.modal { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--color-border); }
-.modal-title { color: var(--color-text); font-size: 1rem; font-weight: 800; margin: 0; }
+<style scoped>  
+.ac-overlay { position: fixed; inset: 0; background: rgba(6,13,16,0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.ac-modal { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; }
+.ac-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--color-border); }
+.ac-modal-title { color: var(--color-text); font-size: 1rem; font-weight: 800; margin: 0; }
 .btn-icon { background: none; border: none; color: var(--color-text-muted); font-size: 1.1rem; cursor: pointer; }
+.ac-modal-body { padding: 16px 18px; }
 .modal-body { padding: 16px 18px; }
 .field-label { display: block; color: var(--color-text-label); font-size: 0.8rem; margin: 12px 0 5px; }
 .field-select { width: 100%; background: var(--color-surface-alt); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 8px; padding: 10px 12px; font-size: 0.9rem; }

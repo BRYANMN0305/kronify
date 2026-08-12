@@ -7,7 +7,7 @@
           <h1>Calendario</h1>
         </div>
         <div class="header-actions">
-          <button class="toolbar-button" @click="applyFilters">Actualizar</button>
+          
           <button class="toolbar-button toolbar-button--primary" @click="showCreate = true">Nueva cita</button>
         </div>
       </header>

@@ -1,7 +1,7 @@
 <template>
   <div class="work-page">
     <header class="work-header">
-      <h1>Mis citas</h1>
+      <h1>Negocios Recientes</h1>
       <button class="btn btn-outline-light" @click="load">Actualizar</button>
     </header>
 
@@ -29,9 +29,9 @@
       </p>
     </section>
 
-    <div v-if="loading" class="state">Cargando citas...</div>
+    <div v-if="loading" class="state">Cargando Negocios ...</div>
     <div v-else-if="error" class="state state-error">{{ error }}</div>
-    <div v-else-if="appointments.length === 0" class="state">Aun no tienes citas registradas.</div>
+    <div v-else-if="appointments.length === 0" class="state">Aun no tienes negocios registrados.</div>
 
     <div v-else class="stack">
       <AppointmentListItem

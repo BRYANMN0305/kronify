@@ -25,11 +25,14 @@ const authLayout = {
   children: [
     // Calendario (protegida)
     {
-      path: '/calendario',
-      name: 'Calendario',
-      component: () => import('@/views/dashboard/AgendaView.vue'),
-      meta: { requiresAuth: true },
-    },
+ 
+  path: '/calendario',
+  name: 'Calendario',
+  component: () => import('@/views/CalendarRouterView.vue'),
+  meta: { requiresAuth: true },
+
+  },
+ 
 
     {
       path: '/mis-citas',
