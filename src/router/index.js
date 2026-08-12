@@ -35,8 +35,9 @@ const authLayout = {
  
 
     {
-      path: '/mis-citas',
-      name: 'MisCitas',
+      path: '/negocios-recientes',
+      name: 'NegociosRecientes',
+      alias: '/mis-citas',
       component: () => import('@/views/client/MyAppointmentsView.vue'),
       meta: { requiresAuth: true },
     },

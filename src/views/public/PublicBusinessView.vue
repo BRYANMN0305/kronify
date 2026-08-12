@@ -79,7 +79,7 @@
             <strong>{{ business.employees?.length || 0 }}</strong>
             <span>Profesionales</span>
           </div>
-          <button class="pb-aside-button" @click="openBooking(null)">Reservar cita</button>
+          <button class="pb-aside-button" @click="openBooking(null)">Programa tu cita</button>
         </div>
       </aside>
     </div>
@@ -253,14 +253,45 @@ onMounted(async () => {
 .pb-aside-stat strong { color: var(--color-text); font-size: 1.5rem; }
 .pb-aside-stat span { color: rgba(213, 240, 247, 0.62); }
 .pb-aside-button {
-  background: var(--neon);
-  border: 0;
-  border-radius: 10px;
-  color: var(--color-bg);
-  font-weight: 900;
-  margin-top: 16px;
-  padding: 12px;
   width: 100%;
+  margin-top: auto;
+
+  background: var(--color-primary);
+  border: 1px solid var(--neon-dim);
+  border-radius: 8px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
+
+  transition:
+    background 0.2s,
+    transform 0.1s,
+    box-shadow 0.2s;
+
+  box-sizing: border-box;
+}
+
+.pb-aside-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
+}
+
+.pb-aside-button:active {
+  transform: scale(0.98);
+}
+
+.pb-aside-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.pb-aside-button:disabled {
+  opacity: 0.6;
+  pointer-events: none;
 }
 .pb-empty { color: var(--color-text-muted); font-size: 0.9rem; margin: 0; }
 .state-message { min-height: 60vh; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: var(--color-bg); }

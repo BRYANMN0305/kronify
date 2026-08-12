@@ -1,0 +1,257 @@
+/* ============================================================
+   buttons.css — Sistema de diseño unificado de botones Kronify
+   ============================================================
+   Estilo de referencia: "Nueva cita" y "Actualizar contraseña".
+   Reutiliza las variables globales (--color-primary, --neon-dim,
+   --color-primary-rgb, --neon, --color-text, --color-error...).
+   Todas las variantes comparten la MISMA estructura visual:
+   border-radius, padding, tipografía, borde, transición y hover.
+   ============================================================ */
+
+/* ---- Estructura base de TODOS los botones ---- */
+.btn {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 0.55rem 1.2rem;
+    background-image: none;
+    box-shadow: none;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s,
+                transform 0.1s, box-shadow 0.2s, filter 0.2s;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Elevación y micro-interacción comunes a todas las variantes */
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn:focus-visible {
+    box-shadow: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* ---- Tamaño pequeño ---- */
+.btn-sm {
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.4rem 0.9rem;
+}
+
+/* ---- Variante PRIMARIA (referencia: "Nueva cita" / "Actualizar contraseña") ---- */
+.btn-primary {
+    --bs-btn-bg: var(--color-primary);
+    --bs-btn-color: #fff;
+    --bs-btn-border-color: var(--neon-dim);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--color-primary);
+    --bs-btn-hover-border-color: var(--neon-dim);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--color-primary);
+    --bs-btn-active-border-color: var(--neon-dim);
+    --bs-btn-focus-shadow-rgb: var(--color-primary-rgb);
+    background: var(--color-primary);
+    border: 1px solid var(--neon-dim);
+    color: #fff;
+    letter-spacing: 0.01em;
+    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--color-primary);
+    border-color: var(--neon-dim);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
+}
+
+.btn-primary:active {
+    background: var(--color-primary) !important;
+    border-color: var(--neon-dim) !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2) !important;
+}
+
+/* ---- Variante SECUNDARIA (cancelar, volver, cerrar) ---- */
+.btn-secondary {
+    --bs-btn-color: rgba(255, 255, 255, 0.78);
+    --bs-btn-bg: rgba(6, 13, 16, 0.35);
+    --bs-btn-border-color: rgba(213, 240, 247, 0.28);
+    background: rgba(6, 13, 16, 0.35);
+    border: 1px solid rgba(213, 240, 247, 0.28);
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: rgba(63, 225, 255, 0.08);
+    border-color: rgba(63, 225, 255, 0.55);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.btn-secondary:active {
+    background: rgba(63, 225, 255, 0.1) !important;
+    border-color: var(--neon-dim) !important;
+    color: #fff !important;
+}
+
+/* ---- Variante PELIGRO (eliminar, cancelar cita) — misma estructura, color alerta ---- */
+.btn-danger {
+    --bs-btn-color: #ff8a8a;
+    --bs-btn-bg: rgba(255, 107, 107, 0.12);
+    --bs-btn-border-color: rgba(255, 107, 107, 0.4);
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    color: #ff8a8a;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: rgba(255, 107, 107, 0.65);
+    color: #ffa3a3;
+    box-shadow: 0 0 18px rgba(255, 107, 107, 0.25);
+}
+
+.btn-danger:active {
+    background: rgba(255, 107, 107, 0.22) !important;
+    border-color: #ff8a8a !important;
+    color: #ffb3b3 !important;
+}
+
+/* ---- Variante ÉXITO ---- */
+.btn-success {
+    --bs-btn-color: #7ae0a3;
+    --bs-btn-bg: rgba(83, 226, 143, 0.12);
+    --bs-btn-border-color: rgba(83, 226, 143, 0.4);
+    background: rgba(83, 226, 143, 0.12);
+    border: 1px solid rgba(83, 226, 143, 0.4);
+    color: #7ae0a3;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background: rgba(83, 226, 143, 0.2);
+    border-color: rgba(83, 226, 143, 0.65);
+    color: #93eeb5;
+    box-shadow: 0 0 18px rgba(83, 226, 143, 0.25);
+}
+
+.btn-success:active {
+    background: rgba(83, 226, 143, 0.22) !important;
+    border-color: #7ae0a3 !important;
+    color: #a9f2c6 !important;
+}
+
+/* ---- Variantes OUTLINE (reemplazan el estilo por defecto de Bootstrap) ---- */
+.btn-outline-light {
+    --bs-btn-color: #d5f0f7;
+    --bs-btn-border-color: rgba(213, 240, 247, 0.35);
+    --bs-btn-hover-color: var(--neon);
+    --bs-btn-hover-bg: rgba(63, 225, 255, 0.08);
+    --bs-btn-hover-border-color: var(--neon);
+    --bs-btn-active-color: var(--neon);
+    --bs-btn-active-bg: rgba(63, 225, 255, 0.1);
+    --bs-btn-active-border-color: var(--neon);
+    background: transparent;
+    border: 1px solid rgba(213, 240, 247, 0.35);
+    color: #d5f0f7;
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+    background: rgba(63, 225, 255, 0.08);
+    border-color: var(--neon);
+    color: var(--neon);
+    box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.btn-outline-danger {
+    --bs-btn-color: #ff8585;
+    --bs-btn-border-color: rgba(255, 107, 107, 0.4);
+    --bs-btn-hover-color: #ffb3b3;
+    --bs-btn-hover-bg: rgba(255, 107, 107, 0.12);
+    --bs-btn-hover-border-color: #ff8a8a;
+    background: transparent;
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    color: #ff8585;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    background: rgba(255, 107, 107, 0.12);
+    border-color: #ff8a8a;
+    color: #ffb3b3;
+    box-shadow: 0 0 14px rgba(255, 107, 107, 0.2);
+}
+
+.btn-outline-warning {
+    --bs-btn-color: #e9b453;
+    --bs-btn-border-color: rgba(233, 180, 83, 0.4);
+    --bs-btn-hover-color: #ffcf7d;
+    --bs-btn-hover-bg: rgba(233, 180, 83, 0.12);
+    --bs-btn-hover-border-color: #e9b453;
+    background: transparent;
+    border: 1px solid rgba(233, 180, 83, 0.4);
+    color: #e9b453;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus {
+    background: rgba(233, 180, 83, 0.12);
+    border-color: #e9b453;
+    color: #ffcf7d;
+    box-shadow: 0 0 14px rgba(233, 180, 83, 0.2);
+}
+
+/* ---- Variante GHOST ---- */
+.btn-ghost {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.65);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s,
+                transform 0.1s, box-shadow 0.2s;
+}
+
+.btn-ghost:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.btn-ghost:active {
+    transform: scale(0.98);
+}
+
+.btn-ghost:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+}
