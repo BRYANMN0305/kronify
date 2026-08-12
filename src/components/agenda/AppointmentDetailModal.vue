@@ -1,12 +1,12 @@
 <template>
-  <div class="overlay" @click.self="$emit('close')">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">{{ appointment.serviceName }}</h3>
-        <button class="btn-icon" @click="$emit('close')">×</button>
-      </div>
+ <div class="ac-overlay" @click.self="$emit('close')">
+  <div class="ac-modal">
+    <div class="ac-modal-header">
+      <h3 class="ac-modal-title">{{ appointment.serviceName }}</h3>
+      <button class="btn-icon" @click="$emit('close')">×</button>
+    </div>
 
-      <div class="modal-body">
+    <div class="ac-modal-body">
         <div class="row"><span class="label">Cliente</span><span>{{ appointment.customerName || 'Sin nombre' }}</span></div>
         <div class="row" v-if="appointment.customerPhone"><span class="label">Teléfono</span><span>{{ appointment.customerPhone }}</span></div>
         <div class="row" v-if="appointment.customerEmail"><span class="label">Email</span><span>{{ appointment.customerEmail }}</span></div>
