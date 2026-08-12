@@ -28,6 +28,11 @@ export const appointmentService = {
     return request(`/appointments/history?${params.toString()}`, { method: 'GET' })
   },
 
+  /** getRecentBusinesses - Negocios donde el cliente ha agendado citas */
+  getRecentBusinesses() {
+    return request('/appointments/recent-businesses', { method: 'GET' })
+  },
+
   /** cancel - Cancela una cita propia del cliente */
   cancel(appointmentId) {
     return request(`/appointments/cancel/${appointmentId}`, { method: 'POST' })

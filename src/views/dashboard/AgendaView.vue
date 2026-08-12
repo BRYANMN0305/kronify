@@ -4,49 +4,53 @@
       <header class="work-header">
         <div>
           <span class="eyebrow">Calendario operativo</span>
-          <h1>Agenda</h1>
-          <p>Consulta, filtra y gestiona las citas del negocio.</p>
+          <h1>Calendario</h1>
         </div>
         <div class="header-actions">
-          <button class="refresh-button" @click="showCreate = true">Nueva cita</button>
-          <button class="refresh-button" @click="agenda.fetchAgenda()">Actualizar</button>
+          <button class="toolbar-button" @click="applyFilters">Actualizar</button>
+          <button class="toolbar-button toolbar-button--primary" @click="showCreate = true">Nueva cita</button>
         </div>
       </header>
 
-      <section class="summary-grid" aria-label="Resumen de agenda">
-        <div class="summary-card">
-          <span>Total</span>
-          <strong>{{ agenda.appointments.length }}</strong>
+      <div class="calendar-toolbar">
+        <div class="toolbar-month">
+          <button class="toolbar-nav" type="button" aria-label="Mes anterior" @click="shiftMonth(-1)">‹</button>
+          <strong class="toolbar-month-title">{{ monthLabel }}</strong>
+          <button class="toolbar-nav" type="button" aria-label="Mes siguiente" @click="shiftMonth(1)">›</button>
         </div>
-        <div class="summary-card">
-          <span>Pendientes</span>
-          <strong>{{ countByStatus('PENDING') }}</strong>
-        </div>
-        <div class="summary-card">
-          <span>Confirmadas</span>
-          <strong>{{ countByStatus('CONFIRMED') }}</strong>
-        </div>
-        <div class="summary-card">
-          <span>Completadas</span>
-          <strong>{{ countByStatus('COMPLETED') }}</strong>
-        </div>
-      </section>
 
-      <AgendaFilters
-        :filters="agenda.filters"
-        :employees="employees"
-        :services="servicesStore.services"
-        @apply="agenda.setFilters"
-      />
+        <div class="toolbar-filters">
+          <select v-model="filters.employeeId" class="toolbar-select" aria-label="Filtrar por empleado" @change="applyFilters">
+            <option value="">Todos los empleados</option>
+            <option v-for="employee in employees" :key="employee.employeeId" :value="employee.employeeId">
+              {{ employee.name }}
+            </option>
+          </select>
 
-      <section class="agenda-panel">
-        <div v-if="agenda.loading" class="state">Cargando agenda...</div>
-        <div v-else-if="agenda.error" class="state state-error">{{ friendlyError }}</div>
-        <div v-else-if="agenda.appointments.length === 0" class="state">
-          <strong>No hay citas para este rango</strong>
-          <span>Prueba ampliando las fechas o quitando algun filtro.</span>
+          <select v-model="filters.serviceId" class="toolbar-select" aria-label="Filtrar por servicio" @change="applyFilters">
+            <option value="">Todos los servicios</option>
+            <option v-for="service in servicesStore.services" :key="service.serviceId || service.id" :value="service.serviceId || service.id">
+              {{ service.name }}
+            </option>
+          </select>
+
+          <select v-model="filters.status" class="toolbar-select" aria-label="Filtrar por estado" @change="applyFilters">
+            <option value="">Todos los estados</option>
+            <option value="PENDING">Pendiente</option>
+            <option value="CONFIRMED">Confirmada</option>
+            <option value="CANCELLED">Cancelada</option>
+            <option value="COMPLETED">Completada</option>
+            <option value="NO_SHOW">No asistio</option>
+          </select>
         </div>
-        <AgendaCalendar v-else :appointments="agenda.appointments" @select="selected = $event" />
+      </div>
+
+      <div v-if="agenda.loading" class="state">Cargando agenda...</div>
+      <div v-else-if="agenda.error" class="state state-error">{{ friendlyError }}</div>
+      <div v-else-if="agenda.appointments.length === 0" class="calendar-note">No hay citas en este rango. Prueba cambiando de mes o quitando filtros.</div>
+
+      <section class="calendar-panel">
+        <MonthCalendar :appointments="agenda.appointments" :month="currentMonth" @select="selected = $event" />
       </section>
     </div>
 
@@ -68,32 +72,50 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import dayjs from 'dayjs'
 import { useAgendaStore } from '@/stores/agenda'
 import { useServicesStore } from '@/stores/services'
 import { useBusinessStore } from '@/stores/business'
 import { employeeService } from '@/api/employee'
-import AgendaFilters from '@/components/agenda/AgendaFilters.vue'
-import AgendaCalendar from '@/components/agenda/AgendaCalendar.vue'
+import MonthCalendar from '@/components/agenda/MonthCalendar.vue'
 import AppointmentDetailModal from '@/components/agenda/AppointmentDetailModal.vue'
 import AppointmentCreateModal from '@/components/agenda/AppointmentCreateModal.vue'
 
 const agenda = useAgendaStore()
 const servicesStore = useServicesStore()
 const businessStore = useBusinessStore()
+
 const employees = ref([])
 const selected = ref(null)
 const showCreate = ref(false)
+const currentMonth = ref(dayjs().format('YYYY-MM'))
+const filters = reactive({ employeeId: '', serviceId: '', status: '' })
 const businessId = computed(() => businessStore.business?.businessId || null)
+
+const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+const monthLabel = computed(() => {
+  const d = dayjs(currentMonth.value)
+  return `${MONTHS[d.month()]} ${d.year()}`
+})
 
 const friendlyError = computed(() => {
   if (agenda.error.includes('403')) return 'No tienes permiso para consultar esta agenda con la sesion actual.'
   return agenda.error
 })
 
-function countByStatus(status) {
-  return agenda.appointments.filter((appointment) => appointment.status === status).length
+function applyFilters() {
+  agenda.setFilters({
+    startDate: dayjs(currentMonth.value).startOf('month').format('YYYY-MM-DD'),
+    endDate: dayjs(currentMonth.value).endOf('month').format('YYYY-MM-DD'),
+    ...filters,
+  })
+}
+
+function shiftMonth(delta) {
+  currentMonth.value = dayjs(currentMonth.value).add(delta, 'month').format('YYYY-MM')
+  applyFilters()
 }
 
 function handleUpdated(updated) {
@@ -109,31 +131,94 @@ async function handleCreated() {
 onMounted(async () => {
   await Promise.all([
     businessStore.fetched ? Promise.resolve() : businessStore.fetchStatus().catch(() => {}),
-    agenda.fetchAgenda(),
     servicesStore.fetched ? Promise.resolve() : servicesStore.fetchAll().catch(() => {}),
     employeeService.getEmployees().then((data) => { employees.value = data || [] }).catch(() => {}),
   ])
+  applyFilters()
 })
 </script>
 
 <style scoped>
-.work-page { background: radial-gradient(circle at top left, rgba(63, 225, 255, 0.06), transparent 34%), var(--color-bg); color: var(--color-text); min-height: 100vh; padding: 28px 32px; }
+.work-page { background: radial-gradient(circle at top left, rgba(63, 225, 255, 0.05), transparent 34%), var(--color-bg); color: var(--color-text); min-height: 100vh; padding: 28px 32px; }
 .work-inner { margin: 0 auto; max-width: 1280px; }
-.work-header { align-items: flex-start; display: flex; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
-.eyebrow { color: var(--neon); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
-.work-header h1 { font-size: 1.65rem; line-height: 1.1; margin: 4px 0 6px; }
-.work-header p { color: rgba(213, 240, 247, 0.58); margin: 0; }
+
+.work-header { align-items: center; display: flex; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.eyebrow { color: var(--neon); display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.work-header h1 { font-size: 1.65rem; line-height: 1.1; margin: 4px 0 0; }
 .header-actions { display: flex; gap: 10px; }
-.refresh-button { background: transparent; border: 1px solid rgba(213, 240, 247, 0.38); border-radius: 7px; color: var(--color-text); font-weight: 700; min-height: 40px; padding: 0 16px; }
-.refresh-button:hover { border-color: var(--neon); color: var(--neon); }
-.summary-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
-.summary-card { background: rgba(16, 37, 44, 0.58); border: 1px solid rgba(213, 240, 247, 0.09); border-radius: 8px; padding: 13px 14px; }
-.summary-card span { color: rgba(213, 240, 247, 0.58); display: block; font-size: 0.76rem; font-weight: 700; margin-bottom: 5px; }
-.summary-card strong { color: var(--color-text); font-size: 1.45rem; line-height: 1; }
-.agenda-panel { background: rgba(6, 13, 16, 0.28); border: 1px solid rgba(213, 240, 247, 0.08); border-radius: 8px; min-height: 360px; padding: 14px; }
-.state { align-items: flex-start; background: rgba(16, 37, 44, 0.72); border: 1px solid rgba(63, 225, 255, 0.12); border-radius: 8px; color: rgba(213, 240, 247, 0.68); display: flex; flex-direction: column; gap: 4px; padding: 18px; }
-.state strong { color: var(--color-text); }
+
+.calendar-toolbar { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 16px; }
+.toolbar-month { align-items: center; display: flex; gap: 10px; }
+.toolbar-month-title { color: var(--color-text); font-size: 1.2rem; font-weight: 800; min-width: 150px; }
+.toolbar-nav {
+  background: #1e3d49;
+  border: 1px solid rgba(63, 106, 120, 0.5);
+  border-radius: 8px;
+  color: #d5f0f7;
+  cursor: pointer;
+  font-size: 1.1rem;
+  height: 36px;
+  line-height: 1;
+  width: 36px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.toolbar-nav:hover { background: #10252c; border-color: rgba(63, 225, 255, 0.5); color: var(--neon); }
+
+.toolbar-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+.toolbar-select {
+  appearance: none;
+  background-color: #3f6a78;
+  background-image: linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.8) 50%), linear-gradient(135deg, rgba(255, 255, 255, 0.8) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 16px, calc(100% - 11px) 16px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+  border: 1px solid rgba(213, 240, 247, 0.14);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 600;
+  height: 38px;
+  min-width: 0;
+  padding: 0 34px 0 13px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.toolbar-select:hover { background-color: #10252c; border-color: rgba(63, 225, 255, 0.45); }
+.toolbar-select:focus { border-color: var(--neon); outline: none; }
+.toolbar-select option { background: #10252c; color: #d5f0f7; }
+
+.toolbar-button {
+  background: transparent;
+  border: 1px solid rgba(213, 240, 247, 0.38);
+  border-radius: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 700;
+  height: 38px;
+  padding: 0 16px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.toolbar-button:hover { border-color: var(--neon); color: var(--neon); }
+.toolbar-button--primary {
+  background: var(--neon);
+  border-color: var(--neon);
+  color: #081013;
+}
+.toolbar-button--primary:hover { filter: brightness(1.05); color: #081013; }
+
+.calendar-panel { border-radius: 12px; }
+.calendar-note { background: rgba(16, 37, 44, 0.72); border: 1px solid rgba(63, 225, 255, 0.12); border-radius: 8px; color: rgba(213, 240, 247, 0.6); font-size: 0.88rem; margin-bottom: 16px; padding: 14px; }
+.state { background: rgba(16, 37, 44, 0.72); border: 1px solid rgba(63, 225, 255, 0.12); border-radius: 8px; color: rgba(213, 240, 247, 0.68); margin-bottom: 16px; padding: 18px; }
 .state-error { border-color: rgba(255, 107, 107, 0.3); color: #ff8585; }
-@media (max-width: 920px) { .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .work-page { padding: 20px 14px; } .work-header { flex-direction: column; } .summary-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 920px) {
+  .calendar-toolbar { align-items: flex-start; flex-direction: column; }
+  .toolbar-filters { width: 100%; }
+  .toolbar-select { flex: 1 1 160px; }
+}
+@media (max-width: 560px) {
+  .work-page { padding: 20px 14px; }
+  .work-header { align-items: flex-start; flex-direction: column; }
+}
 </style>
