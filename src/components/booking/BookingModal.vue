@@ -556,9 +556,13 @@ function formatDate(dateStr) {
 .required-mark { color: var(--color-error); font-weight: 700; }
 .error-message { color: var(--color-error); font-size: 0.82rem; margin-top: 10px; }
 .btn-confirm {
-  width: 100%; background: var(--neon); color: var(--color-bg); border: none; font-weight: 600;
-  padding: 12px; border-radius: 10px; margin-top: 16px; cursor: pointer; font-size: 0.92rem;
+  width: 100%; background: var(--btn-primary-bg); color: var(--btn-primary-text); border: 1px solid var(--btn-primary-border);
+  font-weight: 700; padding: 12px; border-radius: var(--btn-radius); margin-top: 16px; cursor: pointer; font-size: 0.92rem;
+  box-shadow: var(--btn-primary-shadow);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
+.btn-confirm:hover { background: var(--btn-primary-bg-hover); border-color: var(--btn-primary-border-hover); transform: translateY(-1px); box-shadow: var(--btn-primary-shadow-hover); }
+.btn-confirm:active { transform: scale(0.98); }
 .btn-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .step-confirm { text-align: center; padding: 20px 0; }

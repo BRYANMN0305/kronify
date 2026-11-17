@@ -28,6 +28,7 @@ import './assets/styles/services.css'
 import './assets/styles/schedules.css'
 import './assets/styles/forms.css'
 import './assets/styles/sidebar.css'
+import './assets/styles/buttons.css'
 
 const app = createApp(App)
 

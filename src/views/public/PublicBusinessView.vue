@@ -253,15 +253,25 @@ onMounted(async () => {
 .pb-aside-stat strong { color: var(--color-text); font-size: 1.5rem; }
 .pb-aside-stat span { color: rgba(213, 240, 247, 0.62); }
 .pb-aside-button {
-  background: var(--neon);
-  border: 0;
-  border-radius: 10px;
-  color: var(--color-bg);
-  font-weight: 900;
+  background: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-border);
+  border-radius: var(--btn-radius);
+  color: var(--btn-primary-text);
+  cursor: pointer;
+  font-weight: 700;
   margin-top: 16px;
   padding: 12px;
   width: 100%;
+  box-shadow: var(--btn-primary-shadow);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
+.pb-aside-button:hover {
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--btn-primary-border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+.pb-aside-button:active { transform: scale(0.98); }
 .pb-empty { color: var(--color-text-muted); font-size: 0.9rem; margin: 0; }
 .state-message { min-height: 60vh; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: var(--color-bg); }
 

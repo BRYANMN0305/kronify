@@ -508,21 +508,31 @@ input.kd-select::-webkit-calendar-picker-indicator {
   opacity: 0.45;
 }
 .kd-btn-primary {
-  background: #3fe1ff;
-  border: 1px solid #3fe1ff;
-  color: #081013;
+  background: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-border);
+  color: var(--btn-primary-text);
+  box-shadow: var(--btn-primary-shadow);
 }
 .kd-btn-primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--btn-primary-border-hover);
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+.kd-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
 }
 .kd-btn-secondary {
   background: transparent;
-  border: 1px solid rgba(213, 240, 247, 0.35);
-  color: #d5f0f7;
+  border: 1px solid var(--btn-ghost-border);
+  color: var(--btn-ghost-text);
 }
 .kd-btn-secondary:hover:not(:disabled) {
-  border-color: #3fe1ff;
-  color: #3fe1ff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.kd-btn-secondary:active:not(:disabled) {
+  transform: scale(0.98);
 }
 .kd-btn-reschedule {
   margin-top: 16px;

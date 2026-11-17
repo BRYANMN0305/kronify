@@ -129,10 +129,13 @@ const hoursRanges = computed(() => {
 .booking-card strong { color: var(--color-text); display: block; font-size: 1.25rem; margin-top: 8px; }
 .booking-card p { color: rgba(213, 240, 247, 0.62); font-size: 0.9rem; line-height: 1.45; margin: 8px 0 18px; }
 .btn-book {
-  background: var(--neon); border: none; border-radius: 10px; color: var(--color-bg); cursor: pointer; font-size: 0.95rem; font-weight: 800;
+  background: var(--btn-primary-bg); border: 1px solid var(--btn-primary-border); border-radius: var(--btn-radius); color: var(--btn-primary-text); cursor: pointer; font-size: 0.95rem; font-weight: 700;
   padding: 13px 24px; width: 100%;
+  box-shadow: var(--btn-primary-shadow);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
-.btn-book:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-book:hover { background: var(--btn-primary-bg-hover); border-color: var(--btn-primary-border-hover); transform: translateY(-1px); box-shadow: var(--btn-primary-shadow-hover); }
+.btn-book:active { transform: scale(0.98); }
 .hours { align-items: center; border-top: 1px solid rgba(213, 240, 247, 0.09); display: flex; gap: 14px; margin: 0 auto; max-width: 1180px; padding: 16px 28px 20px; position: relative; }
 .hours-label { color: var(--color-text-label); flex-shrink: 0; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
 .hours-list { display: flex; flex-wrap: wrap; gap: 8px; }

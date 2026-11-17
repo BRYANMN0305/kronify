@@ -122,44 +122,7 @@
 }
 
 /* ---- Botón primario (estilo login) ---- */
-.services-btn-primary {
-    background: var(--color-primary);
-    border: 1px solid var(--neon-dim);
-    border-radius: 10px;
-    padding: 0.6rem 1.3rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--color-text);
-    letter-spacing: 0.01em;
-    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-}
-
-.services-btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
-    color: #fff;
-    background: var(--color-primary);
-    border-color: var(--neon-dim);
-}
-
-.services-btn-primary:active {
-    background: var(--color-primary) !important;
-    border-color: var(--neon-dim) !important;
-    transform: scale(0.98);
-    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
-    color: #fff !important;
-}
-
-.services-btn-primary:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
-}
-
-.services-btn-primary:disabled {
-    opacity: 0.6;
-    pointer-events: none;
-}
+/* El estilo vive en buttons.css para mantenerlo igual en toda la app. */
 
 .btn-plus-icon {
     font-size: 1rem;
@@ -607,64 +570,10 @@
 }
 
 /* ---- Botón ghost ---- */
-.services-modal .btn-ghost {
-    background: none;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 8px;
-    padding: 0.5rem 1.1rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.65);
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.1s, box-shadow 0.2s;
-}
-
-.services-modal .btn-ghost:hover {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.35);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-1px);
-}
-
-.services-modal .btn-ghost:active {
-    transform: scale(0.98);
-}
+/* El estilo vive en buttons.css para mantenerlo igual en toda la app. */
 
 /* ---- Botón peligro ---- */
-.services-btn-danger {
-    background: rgba(255, 107, 107, 0.12);
-    border: 1px solid rgba(255, 107, 107, 0.35);
-    border-radius: 8px;
-    padding: 0.55rem 1.2rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #ff8a8a;
-    transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
-}
-
-.services-btn-danger:hover {
-    background: rgba(255, 107, 107, 0.22);
-    border-color: rgba(255, 107, 107, 0.55);
-    color: #ffa3a3;
-    transform: translateY(-1px);
-}
-
-.services-btn-danger:active {
-    background: rgba(255, 107, 107, 0.22) !important;
-    border-color: rgba(255, 107, 107, 0.55) !important;
-    color: #ffa3a3 !important;
-    transform: scale(0.98);
-}
-
-.services-btn-danger:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.25);
-}
-
-.services-btn-danger:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
+/* El estilo vive en buttons.css para mantenerlo igual en toda la app. */
 
 /* ---- Modal de borrado ---- */
 .delete-text {

@@ -60,16 +60,25 @@ defineEmits(['book'])
 .service-action { align-items: flex-end; display: flex; flex-direction: column; gap: 12px; justify-content: center; min-width: 132px; }
 .service-price { color: var(--neon); font-size: 1.08rem; font-weight: 900; }
 .btn-reserve {
-  background: transparent;
-  border: 1px solid rgba(63, 225, 255, 0.22);
-  border-radius: 8px;
-  color: var(--color-text-label);
+  background: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-border);
+  border-radius: var(--btn-radius);
+  color: var(--btn-primary-text);
   cursor: pointer;
   font-size: 0.84rem;
   font-weight: 700;
   padding: 8px 18px;
+  box-shadow: var(--btn-primary-shadow);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
-.btn-reserve:hover { background: rgba(63, 225, 255, 0.1); border-color: var(--neon); color: var(--neon); }
+.btn-reserve:hover {
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--btn-primary-border-hover);
+  color: var(--btn-primary-text);
+  transform: translateY(-1px);
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+.btn-reserve:active { transform: scale(0.98); }
 @media (max-width: 640px) {
   .service-row { flex-direction: column; }
   .service-action { align-items: stretch; flex-direction: row; justify-content: space-between; min-width: 0; }

@@ -320,10 +320,10 @@ const handleLogout = () => {
   gap: 0.5rem;
   width: 100%;
   padding: 0.7rem 1rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--btn-danger-border);
   border-radius: 10px;
-  background: var(--color-surface);
-  color: rgba(255, 138, 138, 0.85);
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -331,9 +331,9 @@ const handleLogout = () => {
 }
 
 .settings-logout-btn:hover {
-  color: #ff8a8a;
-  background: rgba(255, 107, 107, 0.08);
-  border-color: rgba(255, 107, 107, 0.35);
+  color: #ffa3a3;
+  background: var(--btn-danger-bg-hover);
+  border-color: var(--btn-danger-border-hover);
 }
 
 .settings-logout-icon {

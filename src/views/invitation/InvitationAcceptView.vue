@@ -24,7 +24,7 @@
       <button type="button" class="btn btn-primary w-100" @click="goToRegister">
         Crear mi cuenta
       </button>
-      <button type="button" class="btn btn-ghost-inline w-100 mt-2" @click="goToLogin">
+      <button type="button" class="btn btn-ghost w-100 mt-2" @click="goToLogin">
         Ya tengo una cuenta — Iniciar sesión
       </button>
     </div>
@@ -43,7 +43,7 @@
         <button type="button" class="btn btn-primary w-100 mt-3" @click="router.push('/horarios')">
           Ir a mis horarios
         </button>
-        <button type="button" class="btn btn-ghost-inline w-100 mt-2" @click="router.push('/calendario')">
+        <button type="button" class="btn btn-ghost w-100 mt-2" @click="router.push('/calendario')">
           Ir al calendario
         </button>
       </template>
@@ -114,20 +114,3 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.btn-ghost-inline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0.7rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.btn-ghost-inline:hover {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.35);
-}
-</style>

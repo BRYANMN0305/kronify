@@ -1,0 +1,215 @@
+/* ============================================================
+   buttons.css — Sistema único de botones (tema "Acero Petróleo")
+   ============================================================
+   Se importa al final para que Bootstrap no imponga sus propios
+   colores. Todos los botones primarios comparten el mismo fondo,
+   borde, radio y estados; los secundarios, ghost y de peligro
+   también mantienen un único estilo en toda la aplicación.
+   ============================================================ */
+
+/* ---- Base ---- */
+.btn,
+.services-btn-primary,
+.services-btn-danger {
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.btn {
+    padding: 0.6rem 1.3rem;
+    box-shadow: none;
+}
+
+/* ---- Primario (mismo color en toda la app) ---- */
+.btn-primary,
+.services-btn-primary {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
+    border-radius: var(--btn-radius);
+    color: var(--btn-primary-text);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 0.6rem 1.3rem;
+    box-shadow: var(--btn-primary-shadow);
+}
+
+.btn-primary:hover,
+.services-btn-primary:hover {
+    background: var(--btn-primary-bg-hover);
+    border-color: var(--btn-primary-border-hover);
+    color: var(--btn-primary-text);
+    transform: translateY(-1px);
+    box-shadow: var(--btn-primary-shadow-hover);
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.services-btn-primary:active {
+    background: var(--btn-primary-bg-hover);
+    border-color: var(--btn-primary-border-hover);
+    color: var(--btn-primary-text);
+    transform: scale(0.98);
+    box-shadow: var(--btn-primary-shadow);
+}
+
+.btn-primary:focus-visible,
+.services-btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.35), var(--btn-primary-shadow);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled,
+.services-btn-primary:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ---- Secundario / ghost ---- */
+.btn-ghost,
+.btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--btn-ghost-border);
+    border-radius: var(--btn-radius);
+    color: var(--btn-ghost-text);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    box-shadow: none;
+}
+
+.btn-ghost:hover,
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.btn-ghost:active,
+.btn-outline-light:active,
+.btn-outline-light.active {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #fff;
+    transform: scale(0.98);
+    box-shadow: none;
+}
+
+.btn-ghost:focus-visible,
+.btn-outline-light:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.btn-ghost:disabled,
+.btn-outline-light:disabled {
+    opacity: 0.55;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ---- Peligro ---- */
+.services-btn-danger,
+.btn-danger,
+.btn-outline-danger {
+    background: var(--btn-danger-bg);
+    border: 1px solid var(--btn-danger-border);
+    border-radius: var(--btn-radius);
+    color: var(--btn-danger-text);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.55rem 1.2rem;
+}
+
+.services-btn-danger:hover,
+.btn-danger:hover,
+.btn-outline-danger:hover {
+    background: var(--btn-danger-bg-hover);
+    border-color: var(--btn-danger-border-hover);
+    color: #ffa3a3;
+    transform: translateY(-1px);
+}
+
+.services-btn-danger:active,
+.btn-danger:active,
+.btn-outline-danger:active {
+    background: var(--btn-danger-bg-hover);
+    border-color: var(--btn-danger-border-hover);
+    color: #ffa3a3;
+    transform: scale(0.98);
+}
+
+.services-btn-danger:focus-visible,
+.btn-danger:focus-visible,
+.btn-outline-danger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.25);
+}
+
+.services-btn-danger:disabled,
+.btn-danger:disabled,
+.btn-outline-danger:disabled {
+    opacity: 0.55;
+    pointer-events: none;
+    transform: none;
+}
+
+/* ---- Advertencia ---- */
+.btn-outline-warning {
+    background: var(--btn-warning-bg);
+    border: 1px solid var(--btn-warning-border);
+    border-radius: var(--btn-radius);
+    color: var(--btn-warning-text);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.55rem 1.2rem;
+}
+
+.btn-outline-warning:hover {
+    background: var(--btn-warning-bg-hover);
+    border-color: var(--btn-warning-border-hover);
+    color: #ffd98a;
+    transform: translateY(-1px);
+}
+
+.btn-outline-warning:active {
+    background: var(--btn-warning-bg-hover);
+    border-color: var(--btn-warning-border-hover);
+    color: #ffd98a;
+    transform: scale(0.98);
+}
+
+.btn-outline-warning:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 199, 91, 0.25);
+}
+
+.btn-outline-warning:disabled {
+    opacity: 0.55;
+    pointer-events: none;
+    transform: none;
+}
+
+/* ---- Tamaño pequeño (al final para ganar a los paddings base) ---- */
+.btn.btn-sm,
+.services-btn-primary.btn-sm,
+.btn-ghost.btn-sm,
+.btn-danger.btn-sm,
+.btn-outline-light.btn-sm,
+.btn-outline-danger.btn-sm,
+.btn-outline-warning.btn-sm {
+    border-radius: var(--btn-radius-sm);
+    font-size: 0.78rem;
+    padding: 0.4rem 0.85rem;
+}

@@ -166,9 +166,13 @@ const formatTime = (value) => dayjs(value).format('h:mm A')
 .form-grid { margin-top: 8px; }
 .empty-message { color: var(--color-text-muted); margin: 12px 0 0; }
 .error-message { color: var(--color-error); font-size: 0.82rem; margin-top: 10px; }
-.btn-primary, .btn-secondary { width: 100%; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 12px; padding: 12px; }
-.btn-primary { background: var(--neon); border: none; color: var(--color-bg); }
-.btn-secondary { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-label); }
-.btn-primary:disabled, .btn-secondary:disabled { cursor: not-allowed; opacity: 0.55; }
+.btn-primary, .btn-secondary { width: 100%; border-radius: var(--btn-radius); cursor: pointer; font-size: 0.85rem; font-weight: 700; margin-top: 12px; padding: 12px; transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s; }
+.btn-primary { background: var(--btn-primary-bg); border: 1px solid var(--btn-primary-border); color: var(--btn-primary-text); box-shadow: var(--btn-primary-shadow); }
+.btn-primary:hover:not(:disabled) { background: var(--btn-primary-bg-hover); border-color: var(--btn-primary-border-hover); }
+.btn-primary:active:not(:disabled) { transform: scale(0.98); }
+.btn-secondary { background: transparent; border: 1px solid var(--btn-ghost-border); color: var(--btn-ghost-text); }
+.btn-secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.35); color: #fff; }
+.btn-secondary:active:not(:disabled) { transform: scale(0.98); }
+.btn-primary:disabled, .btn-secondary:disabled { cursor: not-allowed; opacity: 0.55; box-shadow: none; }
 @media (max-width: 520px) { .slots-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>

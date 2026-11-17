@@ -218,37 +218,6 @@ onUnmounted(() => {
 .work-header h1 { font-size: 1.65rem; line-height: 1.1; margin: 4px 0 0; }
 .header-actions { display: flex; gap: 10px; }
 
-.header-actions .btn-primary {
-  background: var(--color-primary);
-  border: 1px solid var(--neon-dim);
-  border-radius: 8px;
-  padding: 0.6rem 1.3rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.01em;
-  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
-  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-}
-.header-actions .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 18px rgba(var(--color-primary-rgb), 0.45);
-}
-.header-actions .btn-primary:active {
-  background: var(--color-primary) !important;
-  border-color: var(--neon-dim) !important;
-  transform: scale(0.98);
-  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.2);
-}
-.header-actions .btn-primary:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
-}
-.header-actions .btn-primary:disabled {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
 .calendar-toolbar { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 16px; }
 .toolbar-month { align-items: center; display: flex; gap: 10px; }
 .toolbar-month-title { color: var(--color-text); font-size: 1.2rem; font-weight: 800; min-width: 150px; }

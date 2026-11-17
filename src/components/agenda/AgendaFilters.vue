@@ -52,7 +52,7 @@
       </select>
     </div>
 
-    <button class="filter-button" type="button" @click="$emit('apply', local)">Filtrar</button>
+    <button class="btn btn-primary filter-button" type="button" @click="$emit('apply', local)">Filtrar</button>
   </section>
 </template>
 
@@ -111,11 +111,6 @@ select.agenda-control {
 .agenda-control:focus { border-color: var(--neon); outline: none; }
 .agenda-control option { background: var(--color-surface); }
 .filter-button {
-  background: var(--neon);
-  border: 0;
-  border-radius: 7px;
-  color: var(--color-bg);
-  font-weight: 800;
   height: 40px;
   padding: 0 18px;
 }
